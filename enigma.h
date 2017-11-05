@@ -1,6 +1,12 @@
 #ifndef ENIGMA_H
 #define ENIGMA_H
 
+#include <cstring>
+#include <string>
+#include <vector>
+#include <sstream>
+using namespace std;
+
 /* error codes  */
 #define INSUFFICIENT_NUMBER_OF_PARAMETERS		1
 #define INVALID_INPUT_CHARACTER				2
@@ -22,26 +28,41 @@ typedef char* CharPtr;
 /*Helper function declarations */
 bool check_no_parameters (int numberArguments);
 
+  
+
 
 /*Class definitions*/
 
 class InputSwitch {
  private:
-  CharPtr letter;
+  char letter;
  public:
-  InputSwitch (char &l) : letter(&l) {}
+  InputSwitch (char &l) : letter(l) {}
+  void set_letter (int pos, char array[]) {
+    letter = array[pos];}
   char return_letter()  {
-    return *letter; }
+    return letter; }
 };
 
 
 class Plugboard  {
  private:
   char letter;
-  char settings[512];
+  string settings;
+  vector<int> token;
+  //char setting_token_1;
+  //char setting_token_2;
  public:
-  Plugboard (char l, char set[]);
-  //void swap_values;
+  Plugboard (char l);
+  string return_settings () {
+    return settings;}
+  void set_letter (char l)  {
+    letter = l; }
+  int get_tokens (const string &s);
+  int return_token (int n)  {
+    return token[n]; }
+  //void get_token_2;
+  void swap_values (char &current_char);
   //void get_settings;
 };
   

@@ -13,30 +13,48 @@ int main(int argc, char** argv)
   //Check terminal input
   //if (check_no_parameters(argc) == false)
   // return 1;
-
+  int n = 0;
+    
   char message[512]; 
   //What word is entered in the input switch? (character by character)
-  cout << "Enter the message you would like to encode/decode: " << endl;
+  cout << "Enter the message you would like to encode/decode (uppercase letters only): " << endl;
   cin.getline (message, 511);
 
+  InputSwitch input1(message[n]);
+  Plugboard pboard(input1.return_letter());//Constructor also initialises the settings
+  pboard.get_tokens(pboard.return_settings());
+
   
-  //get the input for the input switch
-  for (int n=0; message[n] != '\0'; n++)
+  while (message[n] != '\0')
     {
-      InputSwitch input1(message[n]);
-      //Initialises the letter from the input switch using its constructor
+      //Passes in the new letter of the input class into the plugboard      
+      pboard.set_letter(input1.return_letter());
 
-      //Pass the value to the Plugboard
-
-      Plugboard pboard(input1.return_letter(), argv[1]); // reads in first argument from terminal
-      //created a character array in class Plugboard that carries its settings
+    
       //swap values
+      pboard.swap_values(message[n]);
 
 
+      
+      cout << message[n];
+      n++;
+      //Set the new letter on the input switch for the next iteration
+      input1.set_letter(n, message);
+
+      
       //
     }
   cout << endl;
-  
+
+  //Developer Checks
+      cout << pboard.return_token(0) << endl;
+      cout << pboard.return_token(1) << endl;
+      cout << pboard.return_token(2) << endl;
+      cout << pboard.return_token(3) << endl;
+      cout << pboard.return_token(4) << endl;
+
+  cout << pboard.return_settings();
+            cout << endl;
   
 
   
