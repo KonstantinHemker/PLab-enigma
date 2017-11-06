@@ -28,10 +28,26 @@ typedef char* CharPtr;
 /*Helper function declarations */
 bool check_no_parameters (int numberArguments);
 
-  
+const char* error_description (int code);  
 
 
 /*Class definitions*/
+
+class BaseModule  {
+ protected:
+  string settings;
+  vector<int> token;
+ public:
+  BaseModule ();//loads the settings
+  string return_settings() {
+    return settings;}
+  int get_tokens (const string &s);
+  int return_token (int n)  {
+    return token[n]; }
+  void swap_values (char &current_char); //represents the wiring
+};
+
+
 
 class InputSwitch {
  private:
@@ -45,24 +61,14 @@ class InputSwitch {
 };
 
 
-class Plugboard  {
+ class Plugboard : public BaseModule {
  private:
   char letter;
-  string settings;
-  vector<int> token;
-  //char setting_token_1;
-  //char setting_token_2;
  public:
-  Plugboard (char l);
-  string return_settings () {
-    return settings;}
+  Plugboard (char l) : letter(l) {}
   void set_letter (char l)  {
     letter = l; }
-  int get_tokens (const string &s);
-  int return_token (int n)  {
-    return token[n]; }
-  //void get_token_2;
-  void swap_values (char &current_char);
+  int check_config();
   //void get_settings;
 };
   

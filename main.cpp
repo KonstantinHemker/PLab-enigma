@@ -27,10 +27,19 @@ int main(int argc, char** argv)
   
   while (message[n] != '\0')
     {
-      //Passes in the new letter of the input class into the plugboard      
-      pboard.set_letter(input1.return_letter());
+     
+      //Check plugboard configurations
+      int check;
+      check = pboard.check_config();
+      if (check != 0)
+	{  
+	  cout << error_description(check) << endl;
+	  return 0;
+	}
+      
 
-    
+      //Passes in the new letter of the input class into the plugboard      
+      pboard.set_letter(input1.return_letter()); 
       //swap values
       pboard.swap_values(message[n]);
 
@@ -47,13 +56,16 @@ int main(int argc, char** argv)
   cout << endl;
 
   //Developer Checks
-      cout << pboard.return_token(0) << endl;
+  cout << "First six tokens:" << endl;
+  cout << pboard.return_token(0) << endl;
       cout << pboard.return_token(1) << endl;
       cout << pboard.return_token(2) << endl;
       cout << pboard.return_token(3) << endl;
       cout << pboard.return_token(4) << endl;
+      cout << pboard.return_token(5) << endl;
 
-  cout << pboard.return_settings();
+      cout << "Plugboard configurations:" << endl;    
+      cout << pboard.return_settings();
             cout << endl;
   
 
