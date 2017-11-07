@@ -18,7 +18,7 @@ const char* error_description (int code)  {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
     return "Error: Insufficient number of parameters";
     break;
-  case INVALID_INPUT_CHARACTER: 
+  case INVALID_INPUT_CHARACTER:
     return "Error: Invalid input character";
     break;
   case INVALID_INDEX:
@@ -30,7 +30,7 @@ const char* error_description (int code)  {
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
     return "Error: Impossible plugboard configuration";
      break;
-  case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS: 
+  case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
     return "Error: Incorrect number of plugboard parameters";
     break;
   case INVALID_ROTOR_MAPPING:
@@ -69,21 +69,31 @@ int convert_to_ASCII (int vec)  {
 }
 /*End of function definition*/
 
-
+/*Function that checks the message input*/
+int check_message(char message[])  {
+  for (int n=0; message[n]!= '\0'; n++)
+    {if (isupper(message[n]) == 0)
+	return 2; //Code for invalid input character
+    }
+  return 0;
+}
 
 
 /*Member functions*/
-BaseModule::BaseModule()  {
+
+void BaseModule::load_settings(char* filename)  {
   ifstream plugsettings;
-  plugsettings.open("plugboards/test.pb");
+  plugsettings.open(filename);
   istreambuf_iterator<char> eos;
   string temp (istreambuf_iterator<char>(plugsettings), eos );
   plugsettings.close();
   settings = temp;
-};
+}
 
 
-int BaseModule::get_tokens (const string &s)  {
+
+
+int BaseModule::create_tokens (const string &s)  {
   istringstream is(s);
   int n;
   while (is >> n) {
@@ -95,37 +105,37 @@ int BaseModule::get_tokens (const string &s)  {
 
 
 void BaseModule::swap_values (char &current_char)  {
-  
-  for (int i=0; i <= token.size(); i++)
+
+  for (unsigned int i=0; i <= token.size(); i++)
     {
       if ((token[i]+65 == current_char) && (i%2 == 0)) //compares ASCII values
      	{
 	  current_char = token[i+1]+65;
 	  return;
 	}
-     
+
       if ((token[i]+65 == current_char) && (i%2 == 1))
 	{
 	  current_char = token[i-1]+65;
 	  return;
      	}
-	
+
     }
-}	
+}
 
 int Plugboard::check_config()   {
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
-  for (int i=0; i<=token.size(); i++)
+  for (unsigned int i=0; i<=token.size(); i++)
     {
-      for (int c=0; c<=token.size(); c++) {
+      for (unsigned int c=0; c<=token.size(); c++) {
 	if ((token[i] == token[c]) && (c != i))
 	    return 5;
       }  //Impossible plugboard configuration
       if ((token[i] > 25) || (token[i] < 0))
-	  return 3; //Invalid index 
+	  return 3; //Invalid index
       //Check non numeric character
-      for (int c=0; c< settings.size()-1; c++)
+      for (unsigned int c=0; c< settings.size()-1; c++)
 	{
 	  if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
 	    {}
@@ -135,6 +145,5 @@ int Plugboard::check_config()   {
     }
   return 0;
 }
-	  
-	  
-   
+
+

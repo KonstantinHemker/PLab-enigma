@@ -28,7 +28,11 @@ typedef char* CharPtr;
 /*Helper function declarations */
 bool check_no_parameters (int numberArguments);
 
-const char* error_description (int code);  
+/*Function that carries the error descriptions*/
+const char* error_description (int code);
+
+/*Function that checks the message input*/
+int check_message(char message[]);
 
 
 /*Class definitions*/
@@ -38,11 +42,11 @@ class BaseModule  {
   string settings;
   vector<int> token;
  public:
-  BaseModule ();//loads the settings
+  void load_settings(char* filename);
   string return_settings() {
     return settings;}
-  int get_tokens (const string &s);
-  int return_token (int n)  {
+  int create_tokens (const string &s);
+  int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
 };
@@ -71,9 +75,27 @@ class InputSwitch {
   int check_config();
   //void get_settings;
 };
-  
 
 
+class Rotor : public BaseModule {
+ private:
+  int a_position;
+  char letter;
+  vector<int> curr_token;
+  int notch[512];
+ public:
+  void set_notch () {
+    for (unsigned int n=25; n<=token.size(); n++)
+      notch[n-25] = token[n+1];  }
+  int get_notch(int n) {
+    return notch[n]; }
+  int get_curr_token(int n) {
+    return curr_token[n]; }
+  void set_curr_token()  {
+    for (int n=0; n<=25; n++)
+      curr_token.push_back(n); }
+    
+};
 
 
 
