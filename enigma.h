@@ -45,7 +45,7 @@ class BaseModule  {
   void load_settings(char* filename);
   string return_settings() {
     return settings;}
-  int create_tokens (const string &s);
+  int create_tokens ();
   int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
@@ -69,21 +69,33 @@ class InputSwitch {
  private:
   char letter;
  public:
-  Plugboard (char l) : letter(l) {}
+  Plugboard (char l, char* cl_argument) : letter(l) {
+    load_settings(cl_argument);
+    create_tokens();
+  }
   void set_letter (char l)  {
     letter = l; }
   int check_config();
+  char return_letter() {
+    return letter; }
   //void get_settings;
 };
 
 
 class Rotor : public BaseModule {
  private:
-  int a_position;
+  int start_position;
   char letter;
   vector<int> curr_token;
-  int notch[512];
+  int notch[26];
  public:
+ void init_rotor(char* cl_argument)
+    {
+    load_settings(cl_argument);
+    create_tokens();
+    set_corr_token();
+    set_notch();
+  }    
   void set_notch () {
     for (unsigned int n=25; n<=token.size(); n++)
       notch[n-25] = token[n+1];  }
@@ -91,10 +103,16 @@ class Rotor : public BaseModule {
     return notch[n]; }
   int get_curr_token(int n) {
     return curr_token[n]; }
-  void set_curr_token()  {
+  void set_corr_token()  {
     for (int n=0; n<=25; n++)
       curr_token.push_back(n); }
-    
+  void set_letter(char c) {
+    letter = c; }
+  char get_letter() {
+    return letter; }
+  
+  //void swap_values ();
+  //void set_start_position()
 };
 
 

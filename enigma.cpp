@@ -93,8 +93,8 @@ void BaseModule::load_settings(char* filename)  {
 
 
 
-int BaseModule::create_tokens (const string &s)  {
-  istringstream is(s);
+int BaseModule::create_tokens ()  {
+  istringstream is(settings);
   int n;
   while (is >> n) {
     token.push_back(n);
@@ -145,5 +145,4 @@ int Plugboard::check_config()   {
     }
   return 0;
 }
-
 

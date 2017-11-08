@@ -31,18 +31,21 @@ int main(int argc, char** argv)
 	}
 
   InputSwitch input1(message[n]);
-  Plugboard pboard(input1.return_letter());//Constructor also initialises the settings
-  pboard.load_settings(argv[1]);
-  pboard.create_tokens(pboard.return_settings());
-  //Return number of rotors
+  Plugboard pboard(input1.return_letter(), argv[1]);//Constructor also loads settings and creates tokens
+  //Return number of rotors depending on how many arguments are entered in the command line
+  Rotor rotor[1000];
+  int no_rotors;
+  /*Change to up to 5 */
+  no_rotors = argc - 2; //5 arguments are entered regardless. The only one that may vary is the number of rotors
+  for (int c = 0; c <= no_rotors; c++)
+    {
+      rotor[c].init_rotor(argv[c+2]);
+    }
+  
+  //Rotor rotor1 (argv[2]);//constructor also creates tokens, sets corresponding tokens and sets notches
 
-  Rotor rotor1;
-  rotor1.load_settings(argv[2]); //reads position into token
-  rotor1.create_tokens(rotor1.return_settings());
-  rotor1.set_curr_token();
-  rotor1.set_notch();
   //Initlialise rotors
-
+  
   
   while (message[n] != '\0')
     {
@@ -63,6 +66,11 @@ int main(int argc, char** argv)
       pboard.swap_values(message[n]);
 
       //Message reaches the rotor
+      for (int i = 0; i <= no_rotors; i++)
+	{
+	  rotor[i].set_letter(message[i]);
+	}
+
       
 
       
@@ -77,23 +85,22 @@ int main(int argc, char** argv)
   cout << endl;
 
   //Developer Checks
-  cout << "First pb six tokens:" << endl;
-  cout << pboard.get_token(0) << endl;
-      cout << pboard.get_token(1) << endl;
-      cout << pboard.get_token(2) << endl;
-      cout << pboard.get_token(3) << endl;
-      cout << pboard.get_token(4) << endl;
-      cout << pboard.get_token(5) << endl;
+  cout << "Plugboard configurations:" << endl;    
+  cout << pboard.return_settings();
+  cout << endl;
 
-      cout << "Plugboard configurations:" << endl;    
-      cout << pboard.return_settings();
+  for (int a = 0; a < no_rotors; a++)
+    {
+      
+      cout << "First two rotor configurations for rotor " << a+1 << ":"  << endl;
+      cout << rotor[a].get_token(0) << endl;
+      cout << rotor[a].get_token(1) << endl;
+      cout << "The first notch is at postition: " << rotor[a].get_notch(0) << endl;
+      cout << "The second notch is at position: " << rotor[a].get_notch(1) << endl;
       cout << endl;
-      cout << "Rotor configurations" << endl;
-      cout << rotor1.get_token(0) << endl;
-      cout << rotor1.get_token(1) << endl;
-      cout << "The notch is at postition: " << rotor1.get_notch(0) << endl;
-  
-
+    }
+      cout << "The number of rotors is " << no_rotors << endl;
+      
 
   return 0;
 
