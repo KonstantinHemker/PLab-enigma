@@ -14,6 +14,8 @@ int main(int argc, char** argv)
   //if (check_no_parameters(argc) == false)
   // return 1;
   int n = 0;
+  vector<int> rotor_positions; 
+  
     
   char message[512]; 
   //What word is entered in the input switch? (character by character)
@@ -41,12 +43,11 @@ int main(int argc, char** argv)
     {
       rotor[c].init_rotor(argv[c+2]);
     }
+  load_rotor_positions(argv[no_rotors+3], rotor_positions);
   
-  //Rotor rotor1 (argv[2]);//constructor also creates tokens, sets corresponding tokens and sets notches
-
-  //Initlialise rotors
+  //set_rotor_positions(
   
-  
+   
   while (message[n] != '\0')
     {
      
@@ -69,6 +70,8 @@ int main(int argc, char** argv)
       for (int i = 0; i <= no_rotors; i++)
 	{
 	  rotor[i].set_letter(message[i]);
+	  //rotor[i].swap_values;
+	  //rotate_rotors(i); 
 	}
 
       

@@ -34,6 +34,9 @@ const char* error_description (int code);
 /*Function that checks the message input*/
 int check_message(char message[]);
 
+/*Function that loads rotor positions*/
+void load_rotor_positions(char* cl_position, string &rot_positions);
+
 
 /*Class definitions*/
 
@@ -42,10 +45,10 @@ class BaseModule  {
   string settings;
   vector<int> token;
  public:
-  void load_settings(char* filename);
+  //void load_settings(char* filename);
   string return_settings() {
     return settings;}
-  int create_tokens ();
+  int create_tokens (char* filename);
   int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
@@ -70,8 +73,8 @@ class InputSwitch {
   char letter;
  public:
   Plugboard (char l, char* cl_argument) : letter(l) {
-    load_settings(cl_argument);
-    create_tokens();
+    //load_settings(cl_argument);
+    create_tokens(cl_argument);
   }
   void set_letter (char l)  {
     letter = l; }
@@ -89,10 +92,10 @@ class Rotor : public BaseModule {
   vector<int> curr_token;
   int notch[26];
  public:
- void init_rotor(char* cl_argument)
+  void init_rotor(char* cl_argument)
     {
-    load_settings(cl_argument);
-    create_tokens();
+      //load_settings(cl_argument);
+    create_tokens(cl_argument);
     set_corr_token();
     set_notch();
   }    

@@ -80,25 +80,24 @@ int check_message(char message[])  {
 
 
 /*Member functions*/
-
+/*
 void BaseModule::load_settings(char* filename)  {
-  ifstream plugsettings;
-  plugsettings.open(filename);
+  ifstream enigmasettings;
+  enigmasettings.open(filename);
   istreambuf_iterator<char> eos;
-  string temp (istreambuf_iterator<char>(plugsettings), eos );
-  plugsettings.close();
+  string temp (istreambuf_iterator<char>(enigmasettings), eos );
+  enigmasettings.close();
   settings = temp;
 }
-
-
-
-
-int BaseModule::create_tokens ()  {
-  istringstream is(settings);
+*/
+int BaseModule::create_tokens (char* filename)  {
+  ifstream enigmasettings;
+  enigmasettings.open(filename);
   int n;
-  while (is >> n) {
+  while (enigmasettings >> n) {
     token.push_back(n);
   }
+  enigmasettings.close();
   return token.size();
 }
 
@@ -135,14 +134,24 @@ int Plugboard::check_config()   {
       if ((token[i] > 25) || (token[i] < 0))
 	  return 3; //Invalid index
       //Check non numeric character
-      for (unsigned int c=0; c< settings.size()-1; c++)
-	{
-	  if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
-	    {}
-	  else
-	    return 4;
-	}
+      // for (unsigned int c=0; c< settings.size()-1; c++)
+      //	{
+      //  if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
+      //    {}
+      //  else
+      //    return 4;
+      //	}
     }
   return 0;
 }
 
+
+void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  {
+  ifstream pos_input;
+  pos_input.open (cl_position);
+  int n;
+  while (pos_input >> n)  {
+    rot_positions.push_back(n);
+  }
+  pos_input.close();
+}
