@@ -145,6 +145,32 @@ int Plugboard::check_config()   {
   return 0;
 }
 
+void Rotor::set_letter(char &current_char) {
+  letter = current_char-65;
+  if ((letter + top_position) > 25)
+    { current_char = (letter  + top_position + 65) -26; //-26 accounts for rotor finishing one circumference
+      letter = current_char -65;
+    }
+  else
+    {
+      current_char = letter + top_position + 65;
+      letter = current_char -65;
+    }
+}
+
+void Rotor::swap_values(char &current_char) {
+  for (int i = 0; i<=25; i++)
+    {
+      if (corr_token[i] == letter)
+	current_char = token[i] + 65;
+    }
+}
+
+//void rotate_up(int i) {
+  //rotate the top position of the rotor up by one
+  //check notch of the rotor
+  //if notch of this rotor should move up as well, we should
+
 
 void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  {
   ifstream pos_input;
@@ -155,3 +181,4 @@ void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  
   }
   pos_input.close();
 }
+

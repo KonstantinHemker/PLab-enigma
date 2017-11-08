@@ -38,13 +38,17 @@ int main(int argc, char** argv)
   Rotor rotor[1000];
   int no_rotors;
   /*Change to up to 5 */
-  no_rotors = argc - 2; //5 arguments are entered regardless. The only one that may vary is the number of rotors
+  no_rotors = argc - 3; //5 arguments are entered regardless. The only one that may vary is the number of rotors
   for (int c = 0; c <= no_rotors; c++)
     {
       rotor[c].init_rotor(argv[c+2]);
     }
-  load_rotor_positions(argv[no_rotors+3], rotor_positions);
+  create_rot_position_tokens(argv[no_rotors+2], rotor_positions);
   
+  for (int i = 0; i <=no_rotors; i++)
+    {
+      rotor[i].set_top_position(i, rotor_positions);
+    }
   //set_rotor_positions(
   
    
@@ -66,13 +70,18 @@ int main(int argc, char** argv)
       //swap values
       pboard.swap_values(message[n]);
 
+      int i = 0;
+      //rotor[i].set_letter(message[n]);
+      
       //Message reaches the rotor
-      for (int i = 0; i <= no_rotors; i++)
+      do 
 	{
-	  rotor[i].set_letter(message[i]);
-	  //rotor[i].swap_values;
-	  //rotate_rotors(i); 
-	}
+	  rotor[i].set_letter(message[n]);
+	  rotor[i].swap_values(message[n]);
+	  //rotate_up(i); //looks at all rotors
+	  i++;
+	  
+	} while (i< no_rotors) ;//exit when the number of rotors is reached (as this equals the number of iteratoins
 
       
 
@@ -88,8 +97,12 @@ int main(int argc, char** argv)
   cout << endl;
 
   //Developer Checks
-  cout << "Plugboard configurations:" << endl;    
-  cout << pboard.return_settings();
+  cout << "Plugboard - first six tokens configurations:" << endl;    
+  for (unsigned int i = 0; i < 6; i++)
+    {
+      cout << pboard.get_token(i) << " "; }
+      
+	  
   cout << endl;
 
   for (int a = 0; a < no_rotors; a++)
@@ -100,6 +113,7 @@ int main(int argc, char** argv)
       cout << rotor[a].get_token(1) << endl;
       cout << "The first notch is at postition: " << rotor[a].get_notch(0) << endl;
       cout << "The second notch is at position: " << rotor[a].get_notch(1) << endl;
+      cout << "The starting position of this rotor is " << rotor[a].get_top_position() << endl;
       cout << endl;
     }
       cout << "The number of rotors is " << no_rotors << endl;

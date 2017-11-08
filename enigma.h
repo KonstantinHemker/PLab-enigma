@@ -35,7 +35,7 @@ const char* error_description (int code);
 int check_message(char message[]);
 
 /*Function that loads rotor positions*/
-void load_rotor_positions(char* cl_position, string &rot_positions);
+void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions);
 
 
 /*Class definitions*/
@@ -87,9 +87,9 @@ class InputSwitch {
 
 class Rotor : public BaseModule {
  private:
-  int start_position;
+  int top_position;
   char letter;
-  vector<int> curr_token;
+  vector<int> corr_token;
   int notch[26];
  public:
   void init_rotor(char* cl_argument)
@@ -104,18 +104,19 @@ class Rotor : public BaseModule {
       notch[n-25] = token[n+1];  }
   int get_notch(int n) {
     return notch[n]; }
-  int get_curr_token(int n) {
-    return curr_token[n]; }
+  int get_corr_token(int n) {
+    return corr_token[n]; }
   void set_corr_token()  {
     for (int n=0; n<=25; n++)
-      curr_token.push_back(n); }
-  void set_letter(char c) {
-    letter = c; }
+      corr_token.push_back(n); }
+  void set_letter(char &current_char);
   char get_letter() {
     return letter; }
-  
-  //void swap_values ();
-  //void set_start_position()
+  void set_top_position (int n, vector<int> &positions) {
+    top_position = positions[n];  }
+  int get_top_position() {
+    return top_position; }
+  void swap_values(char &current_char);
 };
 
 
