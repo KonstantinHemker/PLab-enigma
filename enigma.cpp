@@ -166,7 +166,38 @@ void Rotor::swap_values(char &current_char) {
     }
 }
 
-//void rotate_up(int i) {
+void rotate_up(int i, Rotor* rotor, vector<int> v) {
+  bool top_position_meets_notch;
+  int a = 0;
+  do 
+    {
+      if (rotor[i].get_notch(a) == rotor[i].get_top_position()) 
+	top_position_meets_notch = true;
+      else
+	top_position_meets_notch = false;
+      
+      if ((top_position_meets_notch == false) && (rotor[i].get_top_position() == 25))
+	rotor[i].add_top_position(-25);
+	  
+      else if ((top_position_meets_notch == false) && (rotor[i].get_top_position() != 25))
+	 rotor[i].add_top_position(1);
+      else if ((top_position_meets_notch == true) && (rotor[i].get_top_position() == 25))
+	{
+	  rotor[i].add_top_position(-25);
+	  i++;
+	  rotate_up(i, rotor, v); }
+      else
+	{
+	  rotor[i].add_top_position(1);
+	  i++;
+	  rotate_up(i, rotor, v);
+	}
+      a++;
+    }
+  while (rotor[i].get_notch(a) != '\0');
+}
+
+
   //rotate the top position of the rotor up by one
   //check notch of the rotor
   //if notch of this rotor should move up as well, we should

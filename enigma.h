@@ -8,7 +8,7 @@
 using namespace std;
 
 /* error codes  */
-#define INSUFFICIENT_NUMBER_OF_PARAMETERS		1
+#define INSUFFICIENT_NUMBER_OF_PARAMETERS		12
 #define INVALID_INPUT_CHARACTER				2
 #define INVALID_INDEX					3
 #define NON_NUMERIC_CHARACTER				4
@@ -25,6 +25,11 @@ using namespace std;
 typedef char* CharPtr;
 
 
+class InputSwitch;
+class Plugboard;
+class Rotor;
+
+
 /*Helper function declarations */
 bool check_no_parameters (int numberArguments);
 
@@ -36,6 +41,11 @@ int check_message(char message[]);
 
 /*Function that loads rotor positions*/
 void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions);
+
+
+
+/*Function that rotates the rotors*/
+void rotate_up(int i, Rotor* rotor, vector<int> v);
 
 
 /*Class definitions*/
@@ -70,7 +80,7 @@ class InputSwitch {
 
  class Plugboard : public BaseModule {
  private:
-  char letter;
+   char letter;
  public:
   Plugboard (char l, char* cl_argument) : letter(l) {
     //load_settings(cl_argument);
@@ -100,7 +110,7 @@ class Rotor : public BaseModule {
     set_notch();
   }    
   void set_notch () {
-    for (unsigned int n=25; n<=token.size(); n++)
+    for (unsigned int n=25; n<=token.size()-1; n++)
       notch[n-25] = token[n+1];  }
   int get_notch(int n) {
     return notch[n]; }
@@ -112,8 +122,10 @@ class Rotor : public BaseModule {
   void set_letter(char &current_char);
   char get_letter() {
     return letter; }
-  void set_top_position (int n, vector<int> &positions) {
-    top_position = positions[n];  }
+  void load_top_position (int n, vector<int> &positions, int nrotors) {
+    top_position = positions[nrotors - n];  }
+  void add_top_position(int n) {
+    top_position += n; }
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
