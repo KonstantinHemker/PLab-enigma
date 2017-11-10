@@ -49,7 +49,17 @@ int main(int argc, char** argv)
     {
       rotor[i].load_top_position(i, rotor_positions, no_rotors);
     }
-  //set_rotor_positions(
+  //Check rotor settings;
+  int check_rot = 0;
+  for (int c=0;c<no_rotors;c++) {
+    if (rotor[c].check_config() !=0)
+      {
+	check_rot = rotor[c].check_config();
+	cout << error_description(check_rot) << endl;
+	return 0; }
+  }
+          
+  
   cout  << "The starting position of the rotor 1is " << rotor[0].get_top_position() << endl;
   cout << "The starting position of rotor 2 is " << rotor[1].get_top_position() << endl;;
    

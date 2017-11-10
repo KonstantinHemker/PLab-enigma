@@ -159,11 +159,13 @@ void Rotor::set_letter(char &current_char) {
 }
 
 void Rotor::swap_values(char &current_char) {
+  //current_char = token[letter];
+
   for (int i = 0; i<=25; i++)
     {
-      if (corr_token[i] == letter)
+      if (i == letter)
 	current_char = token[i] + 65;
-    }
+	}
 }
 
 void rotate_up(int i, Rotor* rotor, vector<int> v) {
@@ -213,3 +215,21 @@ void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  
   pos_input.close();
 }
 
+int Rotor::check_config () {
+  //Check INVALID_ROTOR_MAPPING
+  for (int c=0; c<=25;c++)  {
+    for (int i=0; i<=25; i++) {
+      if ((token[i] == token[c]) && (c!=i))
+	  return 7;
+    }
+  }
+  return 0;
+
+  //Check Invalid Index Code
+  for (int c=0; token[i] != '\0'; c++)
+    if (token[i] > 25)
+      return 3;
+  //Check non_numeric character
+  /****Make this a member function of the base module. Can thus be checked more easily. ***/
+  
+}

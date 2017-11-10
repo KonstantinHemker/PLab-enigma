@@ -104,7 +104,6 @@ class Rotor : public BaseModule {
  public:
   void init_rotor(char* cl_argument)
     {
-      //load_settings(cl_argument);
     create_tokens(cl_argument);
     set_corr_token();
     set_notch();
@@ -123,12 +122,13 @@ class Rotor : public BaseModule {
   char get_letter() {
     return letter; }
   void load_top_position (int n, vector<int> &positions, int nrotors) {
-    top_position = positions[nrotors - n];  }
+    top_position = positions[nrotors - (n+1)];  }
   void add_top_position(int n) {
     top_position += n; }
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
+  int check_config(); 
 };
 
 
