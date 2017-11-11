@@ -1,3 +1,4 @@
+
 /* Main part of the enigma program */
 
 #include <iostream>
@@ -37,54 +38,57 @@ int main(int argc, char** argv)
   //Return number of rotors depending on how many arguments are entered in the command line
   int no_rotors;
   /*Change to up to 5 */
-  no_rotors = argc - 3; //5 arguments are entered regardless. The only one that may vary is the number of rotors
+  no_rotors = argc - 4; //5 arguments are entered regardless. The only one that may vary is the number of rotors
   Rotor rotor[no_rotors+1]; //plus one for the '\0' character in the array
+
   for (int c = 0; c <= no_rotors; c++)
     {
-      rotor[c].init_rotor(argv[c+2]);
+      rotor[c].init_rotor(argv[c+3]);
     }
-  create_rot_position_tokens(argv[no_rotors+2], rotor_positions);
+  create_rot_position_tokens(argv[no_rotors+3], rotor_positions);
+
+  //Check rotor settings;
+  int check_rot = 0;
+  for (int c=0;c<no_rotors;c++) {
+    if (rotor[c].check_config(argv[c+3]) !=0)
+      {
+	check_rot = rotor[c].check_config(argv[c+3]);
+	cout << error_description(check_rot) << endl;
+	return 0; }
+  }
+
   
   for (int i = 0; i <=no_rotors; i++)
     {
       rotor[i].load_top_position(i, rotor_positions, no_rotors);
     }
-  //Check rotor settings;
-  int check_rot = 0;
-  for (int c=0;c<no_rotors;c++) {
-    if (rotor[c].check_config() !=0)
-      {
-	check_rot = rotor[c].check_config();
-	cout << error_description(check_rot) << endl;
-	return 0; }
-  }
-          
+
+
   
   cout  << "The starting position of the rotor 1is " << rotor[0].get_top_position() << endl;
   cout << "The starting position of rotor 2 is " << rotor[1].get_top_position() << endl;;
    
   while (message[n] != '\0')
     {
-     
-      //Check plugboard configurations
-      int check_pb;
-      check_pb = pboard.check_config();
-      if (check_pb != 0)
-	{  
-	  cout << error_description(check_pb) << endl;
-	  return 0;
-	}
-      
-
       //Passes in the new letter of the input class into the plugboard      
       pboard.set_letter(input1.return_letter()); 
       //swap values
       pboard.swap_values(message[n]);
 
+        //Check plugboard configurations
+      int check_pb;
+      check_pb = pboard.check_config(argv[1]);
+      if (check_pb != 0)
+	{  
+	  cout << error_description(check_pb) << endl;
+	  return 0;
+	}
+
+      
       int i = 0;
       //rotor[i].set_letter(message[n]);
       
-      //Message reaches the rotor
+      //Loop forwards through all rotors
       do 
 	{
 	  rotor[i].set_letter(message[n]);
@@ -93,14 +97,21 @@ int main(int argc, char** argv)
 	  i++;
 	  
 	} while (i< no_rotors-1) ;//exit when the number of rotors is reached (as this equals the number of iteratoins
-
       
+      
+      Reflector reflector(message[n], argv[2]);
+      reflector.swap_values(message[n]);
+            
+      //Use the corr_token to pass the input backwards through the rotor
+      //(negative forloop)
 
       
       cout << message[n];
       n++;
       //Set the new letter on the input switch for the next iteration
       input1.set_letter(n, message);
+
+      
 
       
       //

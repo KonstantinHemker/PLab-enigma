@@ -52,12 +52,12 @@ void rotate_up(int i, Rotor* rotor, vector<int> v);
 
 class BaseModule  {
  protected:
-  string settings;
+  //string settings;
   vector<int> token;
  public:
-  //void load_settings(char* filename);
-  string return_settings() {
-    return settings;}
+  int check_alpha_char(char* filename);
+  //string return_settings() {
+    //  return settings;}
   int create_tokens (char* filename);
   int get_token (int n)  {
     return token[n]; }
@@ -88,10 +88,21 @@ class InputSwitch {
   }
   void set_letter (char l)  {
     letter = l; }
-  int check_config();
+  int check_config(char* cl_input);
   char return_letter() {
     return letter; }
   //void get_settings;
+};
+
+class Reflector: public BaseModule {
+ private:
+  char letter;
+ public:
+  Reflector (char l, char* cl_argument) : letter(l) {
+    create_tokens(cl_argument); }
+  char get_letter() {
+    return letter; }
+  int check_config();
 };
 
 
@@ -102,6 +113,12 @@ class Rotor : public BaseModule {
   vector<int> corr_token;
   int notch[26];
  public:
+  /*  Rotor (int NumberRotors, char* cl_argument) {
+    for (int c = 0; c <= NumberRotors; c++) {
+      create_tokens(cl_argument);
+      set_corr_token();
+      set_notch();
+      }*/
   void init_rotor(char* cl_argument)
     {
     create_tokens(cl_argument);
@@ -128,7 +145,7 @@ class Rotor : public BaseModule {
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
-  int check_config(); 
+  int check_config(char* cl_input); 
 };
 
 

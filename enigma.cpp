@@ -80,16 +80,29 @@ int check_message(char message[])  {
 
 
 /*Member functions*/
-/*
-void BaseModule::load_settings(char* filename)  {
+
+int BaseModule::check_alpha_char(char* filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   istreambuf_iterator<char> eos;
   string temp (istreambuf_iterator<char>(enigmasettings), eos );
   enigmasettings.close();
-  settings = temp;
+  string settings = temp;
+  //Check non numeric character
+  /*
+       for (unsigned int c=0; c< settings.size(); c++)
+      	{
+        if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
+          {}
+        else
+          return 4;
+      	}
+  */
+       return 0;
+        
 }
-*/
+
+
 int BaseModule::create_tokens (char* filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
@@ -122,7 +135,7 @@ void BaseModule::swap_values (char &current_char)  {
     }
 }
 
-int Plugboard::check_config()   {
+int Plugboard::check_config(char* cl_input)   {
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
   for (unsigned int i=0; i<=token.size(); i++)
@@ -133,15 +146,12 @@ int Plugboard::check_config()   {
       }  //Impossible plugboard configuration
       if ((token[i] > 25) || (token[i] < 0))
 	  return 3; //Invalid index
-      //Check non numeric character
-      // for (unsigned int c=0; c< settings.size()-1; c++)
-      //	{
-      //  if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
-      //    {}
-      //  else
-      //    return 4;
-      //	}
     }
+  //Check for non-numeric character
+  /*
+  if((check_alpha_char(cl_input)) != 0)
+    return check_alpha_char(cl_input);
+  */
   return 0;
 }
 
@@ -215,7 +225,7 @@ void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  
   pos_input.close();
 }
 
-int Rotor::check_config () {
+int Rotor::check_config (char* cl_input) {
   //Check INVALID_ROTOR_MAPPING
   for (int c=0; c<=25;c++)  {
     for (int i=0; i<=25; i++) {
@@ -224,12 +234,11 @@ int Rotor::check_config () {
     }
   }
   return 0;
-
   //Check Invalid Index Code
-  for (int c=0; token[i] != '\0'; c++)
-    if (token[i] > 25)
+  for (int c=0; token[c] != '\0'; c++)
+    if (token[c] > 25)
       return 3;
   //Check non_numeric character
-  /****Make this a member function of the base module. Can thus be checked more easily. ***/
-  
+  if (check_alpha_char(cl_input) != 0)
+    return check_alpha_char(cl_input);
 }
