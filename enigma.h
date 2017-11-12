@@ -8,7 +8,7 @@
 using namespace std;
 
 /* error codes  */
-#define INSUFFICIENT_NUMBER_OF_PARAMETERS		12
+#define INSUFFICIENT_NUMBER_OF_PARAMETERS		1
 #define INVALID_INPUT_CHARACTER				2
 #define INVALID_INDEX					3
 #define NON_NUMERIC_CHARACTER				4
@@ -39,29 +39,22 @@ const char* error_description (int code);
 /*Function that checks the message input*/
 int check_message(char message[]);
 
-/*Function that loads rotor positions*/
-void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions);
-
-
-
-/*Function that rotates the rotors*/
-void rotate_up(int i, Rotor* rotor, vector<int> v);
-
 
 /*Class definitions*/
 
 class BaseModule  {
  protected:
-  //string settings;
+  string settings;
   vector<int> token;
  public:
-  int check_alpha_char(char* filename);
+  int check_numeric_char(char* filename);
   //string return_settings() {
-    //  return settings;}
+  //  return settings;}
   int create_tokens (char* filename);
   int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
+  bool invalid_index ();
 };
 
 
@@ -108,22 +101,29 @@ class Reflector: public BaseModule {
 
 class Rotor : public BaseModule {
  private:
+  int number; //refers to the number of the rotor (from right to left on the configuration)
   int top_position;
+  int relative_position;
   char letter;
   vector<int> corr_token;
+  vector<int> rotor_positions;
   int notch[26];
  public:
-  /*  Rotor (int NumberRotors, char* cl_argument) {
-    for (int c = 0; c <= NumberRotors; c++) {
-      create_tokens(cl_argument);
-      set_corr_token();
-      set_notch();
-      }*/
+  /* Rotor (int NumberRotors, char* cl_argument) {
+      for (int c = 0; c <= NumberRotors; c++) {
+	create_tokens(cl_argument);
+	set_corr_token();
+	set_notch();
+      }
+    }
+  */
+   
   void init_rotor(char* cl_argument)
     {
     create_tokens(cl_argument);
     set_corr_token();
     set_notch();
+    relative_position = top_position;
   }    
   void set_notch () {
     for (unsigned int n=25; n<=token.size()-1; n++)
@@ -138,14 +138,18 @@ class Rotor : public BaseModule {
   void set_letter(char &current_char);
   char get_letter() {
     return letter; }
-  void load_top_position (int n, vector<int> &positions, int nrotors) {
-    top_position = positions[nrotors - (n+1)];  }
+  void load_top_position (int n, int nrotors) {
+    top_position = rotor_positions[nrotors - (n+1)];  }
   void add_top_position(int n) {
     top_position += n; }
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
-  int check_config(char* cl_input); 
+  int check_config(char* cl_input);
+  void create_rot_position_tokens(char* cl_position);
+  int check_rot_positions(int noRotors);
+  void rotate_up(int i, Rotor* rotor);
+  void swap_values_backwards(char &current_char);
 };
 
 

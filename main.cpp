@@ -1,4 +1,3 @@
-
 /* Main part of the enigma program */
 
 #include <iostream>
@@ -15,7 +14,6 @@ int main(int argc, char** argv)
   //if (check_no_parameters(argc) == false)
   // return 1;
   int n = 0;
-  vector<int> rotor_positions; 
   
     
   char message[512]; 
@@ -30,7 +28,7 @@ int main(int argc, char** argv)
    if (check_input != 0)
 	{  
 	  cout << error_description(check_input) << endl;
-	  return 0;
+	  return check_input;
 	}
 
   InputSwitch input1(message[n]);
@@ -39,13 +37,24 @@ int main(int argc, char** argv)
   int no_rotors;
   /*Change to up to 5 */
   no_rotors = argc - 4; //5 arguments are entered regardless. The only one that may vary is the number of rotors
-  Rotor rotor[no_rotors+1]; //plus one for the '\0' character in the array
-
+    
+  Rotor rotor[no_rotors+1];
+  
   for (int c = 0; c <= no_rotors; c++)
     {
       rotor[c].init_rotor(argv[c+3]);
     }
-  create_rot_position_tokens(argv[no_rotors+3], rotor_positions);
+  
+  //Sets rotor starting position tokens and check their validity
+  rotor[0].create_rot_position_tokens(argv[no_rotors+3]);
+  //Check validity of rotor positions
+  int check_pos = rotor[0].check_rot_positions(no_rotors);
+  if (check_pos != 0){
+    cout << error_description(check_pos) << endl;
+    return check_pos;
+  }
+    
+  
 
   //Check rotor settings;
   int check_rot = 0;
@@ -54,18 +63,29 @@ int main(int argc, char** argv)
       {
 	check_rot = rotor[c].check_config(argv[c+3]);
 	cout << error_description(check_rot) << endl;
-	return 0; }
+	return check_rot; }
   }
 
   
-  for (int i = 0; i <=no_rotors; i++)
+  for (int i = 0; i <no_rotors; i++)
     {
-      rotor[i].load_top_position(i, rotor_positions, no_rotors);
+      rotor[i].load_top_position(i, no_rotors);
     }
 
+  //Initializing the reflector
+  Reflector reflector(message[n], argv[2]);
+  //Check reflector
+  int check_rf;
+  check_rf = reflector.check_config();
+  if (check_rf != 0)
+    {
+      cout << error_description(check_rf) << endl;
+      return check_rf;
+    }
 
   
-  cout  << "The starting position of the rotor 1is " << rotor[0].get_top_position() << endl;
+  
+  cout  << "The starting position of the rotor 1 is " << rotor[0].get_top_position() << endl;
   cout << "The starting position of rotor 2 is " << rotor[1].get_top_position() << endl;;
    
   while (message[n] != '\0')
@@ -93,7 +113,7 @@ int main(int argc, char** argv)
 	{
 	  rotor[i].set_letter(message[n]);
 	  rotor[i].swap_values(message[n]);
-	  rotate_up(0, rotor, rotor_positions); //recursive function that looks at all rotors
+	  rotor[0].rotate_up(0, rotor); //recursive function that looks at all rotors
 	  i++;
 	  
 	} while (i< no_rotors-1) ;//exit when the number of rotors is reached (as this equals the number of iteratoins
@@ -101,20 +121,21 @@ int main(int argc, char** argv)
       
       Reflector reflector(message[n], argv[2]);
       reflector.swap_values(message[n]);
-            
+          
       //Use the corr_token to pass the input backwards through the rotor
       //(negative forloop)
+
+      for (int c = no_rotors; c>0; c--)  {
+	rotor[c].set_letter(message[n]);
+	rotor[c].swap_values_backwards(message[n]); 
+      }
 
       
       cout << message[n];
       n++;
       //Set the new letter on the input switch for the next iteration
-      input1.set_letter(n, message);
-
+      input1.set_letter(n, message);  
       
-
-      
-      //
     }
   cout << endl;
 
@@ -139,7 +160,6 @@ int main(int argc, char** argv)
       cout << endl;
     }
       cout << "The number of rotors is " << no_rotors << endl;
-      
 
   return 0;
 

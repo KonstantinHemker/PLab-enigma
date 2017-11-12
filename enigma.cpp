@@ -81,7 +81,7 @@ int check_message(char message[])  {
 
 /*Member functions*/
 
-int BaseModule::check_alpha_char(char* filename)  {
+int BaseModule::check_numeric_char(char* filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   istreambuf_iterator<char> eos;
@@ -89,17 +89,14 @@ int BaseModule::check_alpha_char(char* filename)  {
   enigmasettings.close();
   string settings = temp;
   //Check non numeric character
-  /*
-       for (unsigned int c=0; c< settings.size(); c++)
-      	{
-        if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\0'))
-          {}
-        else
-          return 4;
-      	}
-  */
-       return 0;
-        
+  for (unsigned int c=0; c< settings.size(); c++)
+    {
+      if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\n'))
+	{}
+      else
+	return 4;
+    }
+  return 0;       
 }
 
 
@@ -135,6 +132,15 @@ void BaseModule::swap_values (char &current_char)  {
     }
 }
 
+
+bool BaseModule::invalid_index ()  {
+  for (unsigned int n=0; n <= token.size()  ; n++) {
+      if ((token[n] > 25) || (token[n] < 0))
+      return true; }  
+  return false;
+}
+
+
 int Plugboard::check_config(char* cl_input)   {
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
@@ -144,14 +150,15 @@ int Plugboard::check_config(char* cl_input)   {
 	if ((token[i] == token[c]) && (c != i))
 	    return 5;
       }  //Impossible plugboard configuration
-      if ((token[i] > 25) || (token[i] < 0))
-	  return 3; //Invalid index
     }
-  //Check for non-numeric character
-  /*
-  if((check_alpha_char(cl_input)) != 0)
-    return check_alpha_char(cl_input);
-  */
+  //Check for INVALID INDEX
+  if (invalid_index() == true)
+    return 3; 
+
+  //Check for NON_NUMERIC CHARACTER
+  if((check_numeric_char(cl_input)) != 0)
+    return check_numeric_char(cl_input);
+    
   return 0;
 }
 
@@ -173,12 +180,23 @@ void Rotor::swap_values(char &current_char) {
 
   for (int i = 0; i<=25; i++)
     {
-      if (i == letter)
+      if (i == letter) {
 	current_char = token[i] + 65;
+	relative_position = token[i] + top_position;
 	}
+    }
 }
 
-void rotate_up(int i, Rotor* rotor, vector<int> v) {
+void Rotor::swap_values_backwards(char &current_char) {
+  for (int i = 0; i<=25; i++) {
+    if (token[i] == letter)
+      current_char = i + 65;
+  }
+}
+
+
+  
+void Rotor::rotate_up(int i, Rotor* rotor) {
   bool top_position_meets_notch;
   int a = 0;
   do 
@@ -197,35 +215,56 @@ void rotate_up(int i, Rotor* rotor, vector<int> v) {
 	{
 	  rotor[i].add_top_position(-25);
 	  i++;
-	  rotate_up(i, rotor, v); }
+	  rotate_up(i, rotor); }
       else
 	{
 	  rotor[i].add_top_position(1);
 	  i++;
-	  rotate_up(i, rotor, v);
+	  rotor[0].rotate_up(i, rotor);
 	}
       a++;
     }
   while (rotor[i].get_notch(a) != '\0');
 }
 
-
-  //rotate the top position of the rotor up by one
-  //check notch of the rotor
-  //if notch of this rotor should move up as well, we should
-
-
-void create_rot_position_tokens(char* cl_position, vector<int> &rot_positions)  {
+void Rotor::create_rot_position_tokens(char* cl_position)  {
   ifstream pos_input;
   pos_input.open (cl_position);
   int n;
   while (pos_input >> n)  {
-    rot_positions.push_back(n);
+    rotor_positions.push_back(n);
   }
   pos_input.close();
 }
 
+int Rotor::check_rot_positions(int noRotors) {
+  int vsize = rotor_positions.size();
+  //Check for invalid index
+  for (int i=0; i<vsize; i++) {
+    if (rotor_positions[i] > 25)
+      return 3;  //INVALID INDEX code
+  }
+  
+  //Check whether there are sufficient configurations for the number of rotors
+  cout << vsize << endl;
+  cout << noRotors << endl;
+  if (noRotors <= vsize)
+    return 0;
+  else
+    return 8;
+}
+
+//void Rotor::set_letter_backwards(char &current_char) {
+  
+
+
 int Rotor::check_config (char* cl_input) {
+
+
+  //Check NON_NUMERIC_CHARACTER
+  if (check_numeric_char(cl_input) != 0)
+    return check_numeric_char(cl_input);
+  
   //Check INVALID_ROTOR_MAPPING
   for (int c=0; c<=25;c++)  {
     for (int i=0; i<=25; i++) {
@@ -233,12 +272,31 @@ int Rotor::check_config (char* cl_input) {
 	  return 7;
     }
   }
+  //Check INVALID_INDEX 
+  if (invalid_index() == true)
+    return 3;
+  
   return 0;
-  //Check Invalid Index Code
-  for (int c=0; token[c] != '\0'; c++)
-    if (token[c] > 25)
-      return 3;
-  //Check non_numeric character
-  if (check_alpha_char(cl_input) != 0)
-    return check_alpha_char(cl_input);
+}
+
+
+int Reflector::check_config()  {
+  //Check INVALID REFLECTOR MAPPING
+  for (int c=0; c<=25;c++)  {
+    for (int i=0; i<=25; i++) {
+      if ((token[i] == token[c]) && (c!=i))
+	  return 9;
+    }
+  }
+
+  //Check for INVALID INDEX
+  if (invalid_index() == true)
+    return 3;
+   
+
+  //Check INCORRECT NUMBER OF REFLECTOR PARAMETERS
+  if (token.size() != 26)
+    return 10;
+  
+    return 0;
 }
