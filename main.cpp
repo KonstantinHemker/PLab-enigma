@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
       
       //int i = 0;
-      rotor[0].rotor_inwards(message[n], rotor, no_rotors); //recursive function
+      rotor[0].rotor_inwards(message[n], rotor, no_rotors, 0); //recursive function
       
       
       Reflector reflector(message[n], argv[2]);
@@ -115,9 +115,8 @@ int main(int argc, char** argv)
       //Use the corr_token to pass the input backwards through the rotor
       //(negative forloop)
       
-      for (int c = no_rotors; c>0; c--)  {
-	rotor[c-1].rotor_outwards(message[n]);
-      }
+      rotor[0].rotor_outwards(message[n], rotor, no_rotors, 0);
+      
 
       rotor[0].rotate_up(0, rotor);
 

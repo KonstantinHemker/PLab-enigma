@@ -162,92 +162,92 @@ int Plugboard::check_config(char* cl_input)   {
     
   return 0;
 }
-/*
-void Rotor::set_letter(char &current_char) {
-  letter = current_char-65;
-  if ((relative_position + top_position) > 25)
-    {
-      letter = relative_position+top_position - 26;
-      current_char = letter + 65; //-26 accounts for rotor finishing one circumference
-      relative_position = (relative_position + top_position) -26;
-    }
-  else
-    {
-      letter = relative_position + top_position;
-      current_char = letter + 65;
-      relative_position = letter + top_position;
-    }
-}
-*/
 
-void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors) {
+
+void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a) {
   //Set the letter according to current rotation of rotor
-  int a = 0;
   letter = current_char - 65;
-  if (letter + top_position > 25)
+  if (letter + top_position > 25) {
     letter += top_position -26;
-  else
+    current_char = letter + 65;
+  }
+    else {
     letter +=top_position;
+    current_char = letter + 65;
+    }
 
   //Swap the values according to token mapping
   swap_values(current_char);
     
     a++;
     if (a < noRotors)
-      rotor[a].rotor_inwards(current_char, rotor, noRotors);
+      rotor[a].rotor_inwards(current_char, rotor, noRotors, a);
     else
       return;
 }
 
-
-  
+ 
 
 void Rotor::swap_values(char &current_char) {
-  
-  for (int i = 0; i<=25; i++)
+  int i = 0;
+  while (i<=25)
     {
       if (i == letter) {
 	letter = token[i];
 	current_char = letter + 65;
-	if (token[i] + top_position > 25)
-	  relative_position = (token[i] + top_position) -26;
-	else
-	  relative_position = token[i] + top_position;
-	}
+	break;
+      }
+      i++;
     }
+      
+  if (token[i] + top_position > 25) {
+    letter = (token[i] + top_position) -26;
+    current_char = letter + 65;
+    return;
+  }
+  else {
+    letter = token[i] + top_position;
+    current_char = letter + 65;
+    return;
+  } 
 }
+
     
   
   
-void Rotor::rotor_outwards(char &current_char) {
+void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
   //Set letter input for pb
-   
   letter = current_char -65;
-  if (letter + top_position > 25) {
-    current_char = current_char + top_position -26;
+  if (letter - top_position < 0) {
+    current_char = current_char - top_position + 26;
     letter = current_char - 65;
   }
   else  {
-    current_char = current_char + top_position;
+    current_char = current_char - top_position;
     letter = current_char - 65;
   }
   
   for (int i = 0; i<=25; i++)
     {
-      if ((token[i] == letter) && (i+top_position <=25))
+      if ((token[i] == letter) && (i-top_position >=0))
 	{
-	current_char = i + 65 + top_position;
-	letter = current_char - 65;
-	break;
+	  letter = i - top_position;
+	  current_char = letter + 65;
+	  break;
 	}
-      else if ((token[i] == letter) && (i+top_position > 25))
+      else if ((token[i] == letter) && (i-top_position < 0))
 	{
-	current_char = i + 65 + top_position - 26;
-	letter = current_char - 65;
-	break;
+	  letter = i - top_position + 26;
+	  current_char = letter + 65;
+	  break;
 	}
     }
+  a++;
+  if (a < noRotors)
+    rotor[a].rotor_outwards(current_char, rotor, noRotors, a);
+  
 }
+
 
   
 void Rotor::rotate_up(int i, Rotor* rotor) {
@@ -282,6 +282,7 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
   while (rotor[i].get_notch(a) != '\0');
 }
 
+
 void Rotor::create_rot_position_tokens(char* cl_position)  {
   ifstream pos_input;
   pos_input.open (cl_position);
@@ -291,6 +292,7 @@ void Rotor::create_rot_position_tokens(char* cl_position)  {
   }
   pos_input.close();
 }
+
 
 int Rotor::check_rot_positions(int noRotors) {
   int vsize = rotor_positions.size();
