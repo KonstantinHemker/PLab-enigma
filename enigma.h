@@ -135,7 +135,7 @@ class Rotor : public BaseModule {
   void set_corr_token()  {
     for (int n=0; n<=25; n++)
       corr_token.push_back(n); }
-  void set_letter(char &current_char);
+  void rotor_inwards(char &current_char, Rotor* rotor, int noRotors);
   char get_letter() {
     return letter; }
   void load_top_position (int n, int nrotors) {
@@ -150,6 +150,10 @@ class Rotor : public BaseModule {
   int check_rot_positions(int noRotors);
   void rotate_up(int i, Rotor* rotor);
   void swap_values_backwards(char &current_char);
+  void reset_relative_position()  {
+    relative_position = letter; }
+  void rotor_outwards(char &current_char);
+  
 };
 
 

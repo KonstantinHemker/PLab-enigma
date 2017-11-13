@@ -105,18 +105,8 @@ int main(int argc, char** argv)
 	}
 
       
-      int i = 0;
-      //rotor[i].set_letter(message[n]);
-      
-      //Loop forwards through all rotors
-      do 
-	{
-	  rotor[i].set_letter(message[n]);
-	  rotor[i].swap_values(message[n]);
-	  rotor[0].rotate_up(0, rotor); //recursive function that looks at all rotors
-	  i++;
-	  
-	} while (i< no_rotors-1) ;//exit when the number of rotors is reached (as this equals the number of iteratoins
+      //int i = 0;
+      rotor[0].rotor_inwards(message[n], rotor, no_rotors); //recursive function
       
       
       Reflector reflector(message[n], argv[2]);
@@ -124,12 +114,15 @@ int main(int argc, char** argv)
           
       //Use the corr_token to pass the input backwards through the rotor
       //(negative forloop)
-
+      
       for (int c = no_rotors; c>0; c--)  {
-	rotor[c].set_letter(message[n]);
-	rotor[c].swap_values_backwards(message[n]); 
+	rotor[c-1].rotor_outwards(message[n]);
       }
 
+      rotor[0].rotate_up(0, rotor);
+
+      pboard.set_letter(message[n]);
+      pboard.swap_values(message[n]);
       
       cout << message[n];
       n++;

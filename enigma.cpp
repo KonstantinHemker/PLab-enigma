@@ -115,6 +115,7 @@ int BaseModule::create_tokens (char* filename)  {
 
 void BaseModule::swap_values (char &current_char)  {
 
+
   for (unsigned int i=0; i <= token.size(); i++)
     {
       if ((token[i]+65 == current_char) && (i%2 == 0)) //compares ASCII values
@@ -161,39 +162,92 @@ int Plugboard::check_config(char* cl_input)   {
     
   return 0;
 }
-
+/*
 void Rotor::set_letter(char &current_char) {
   letter = current_char-65;
-  if ((letter + top_position) > 25)
-    { current_char = (letter  + top_position + 65) -26; //-26 accounts for rotor finishing one circumference
-      letter = current_char -65;
+  if ((relative_position + top_position) > 25)
+    {
+      letter = relative_position+top_position - 26;
+      current_char = letter + 65; //-26 accounts for rotor finishing one circumference
+      relative_position = (relative_position + top_position) -26;
     }
   else
     {
-      current_char = letter + top_position + 65;
-      letter = current_char -65;
+      letter = relative_position + top_position;
+      current_char = letter + 65;
+      relative_position = letter + top_position;
     }
 }
+*/
+
+void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors) {
+  //Set the letter according to current rotation of rotor
+  int a = 0;
+  letter = current_char - 65;
+  if (letter + top_position > 25)
+    letter += top_position -26;
+  else
+    letter +=top_position;
+
+  //Swap the values according to token mapping
+  swap_values(current_char);
+    
+    a++;
+    if (a < noRotors)
+      rotor[a].rotor_inwards(current_char, rotor, noRotors);
+    else
+      return;
+}
+
+
+  
 
 void Rotor::swap_values(char &current_char) {
-  //current_char = token[letter];
-
+  
   for (int i = 0; i<=25; i++)
     {
       if (i == letter) {
-	current_char = token[i] + 65;
-	relative_position = token[i] + top_position;
+	letter = token[i];
+	current_char = letter + 65;
+	if (token[i] + top_position > 25)
+	  relative_position = (token[i] + top_position) -26;
+	else
+	  relative_position = token[i] + top_position;
 	}
     }
 }
-
-void Rotor::swap_values_backwards(char &current_char) {
-  for (int i = 0; i<=25; i++) {
-    if (token[i] == letter)
-      current_char = i + 65;
+    
+  
+  
+void Rotor::rotor_outwards(char &current_char) {
+  //Set letter input for pb
+   
+  letter = current_char -65;
+  if (letter + top_position > 25) {
+    current_char = current_char + top_position -26;
+    letter = current_char - 65;
   }
+  else  {
+    current_char = current_char + top_position;
+    letter = current_char - 65;
+  }
+  
+  for (int i = 0; i<=25; i++)
+    {
+      if ((token[i] == letter) && (i+top_position <=25))
+	{
+	current_char = i + 65 + top_position;
+	letter = current_char - 65;
+	break;
+	}
+      else if ((token[i] == letter) && (i+top_position > 25))
+	{
+	current_char = i + 65 + top_position - 26;
+	letter = current_char - 65;
+	break;
+	}
+    }
 }
-
 
   
 void Rotor::rotate_up(int i, Rotor* rotor) {
@@ -205,7 +259,8 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
 	top_position_meets_notch = true;
       else
 	top_position_meets_notch = false;
-      
+
+      //Further checks
       if ((top_position_meets_notch == false) && (rotor[i].get_top_position() == 25))
 	rotor[i].add_top_position(-25);
 	  
@@ -220,7 +275,7 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
 	{
 	  rotor[i].add_top_position(1);
 	  i++;
-	  rotor[0].rotate_up(i, rotor);
+	  rotor[i].rotate_up(i, rotor);
 	}
       a++;
     }
