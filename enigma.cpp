@@ -283,7 +283,7 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
 }
 
 
-void Rotor::create_rot_position_tokens(char* cl_position)  {
+int Rotor::create_rot_position_tokens(char* cl_position)  {
   ifstream pos_input;
   pos_input.open (cl_position);
   int n;
@@ -291,6 +291,7 @@ void Rotor::create_rot_position_tokens(char* cl_position)  {
     rotor_positions.push_back(n);
   }
   pos_input.close();
+  return rotor_positions.size();
 }
 
 
@@ -311,13 +312,9 @@ int Rotor::check_rot_positions(int noRotors) {
     return 8;
 }
 
-//void Rotor::set_letter_backwards(char &current_char) {
-  
 
 
 int Rotor::check_config (char* cl_input) {
-
-
   //Check NON_NUMERIC_CHARACTER
   if (check_numeric_char(cl_input) != 0)
     return check_numeric_char(cl_input);

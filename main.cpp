@@ -32,11 +32,11 @@ int main(int argc, char** argv)
 	}
 
   InputSwitch input1(message[n]);
-  Plugboard pboard(input1.return_letter(), argv[1]);//Constructor also loads settings and creates tokens
-  //Return number of rotors depending on how many arguments are entered in the command line
+  Plugboard pboard(input1.return_letter(), argv[1]);//Constructor loads settings and creates tokens
+  
   int no_rotors;
   /*Change to up to 5 */
-  no_rotors = argc - 4; //5 arguments are entered regardless. The only one that may vary is the number of rotors
+  no_rotors = argc - 4; 
     
   Rotor rotor[no_rotors+1];
   
@@ -47,6 +47,9 @@ int main(int argc, char** argv)
   
   //Sets rotor starting position tokens and check their validity
   rotor[0].create_rot_position_tokens(argv[no_rotors+3]);
+
+
+  /*Checking initial settings of the rotor*/
   //Check validity of rotor positions
   int check_pos = rotor[0].check_rot_positions(no_rotors);
   if (check_pos != 0){
@@ -54,9 +57,7 @@ int main(int argc, char** argv)
     return check_pos;
   }
     
-  
-
-  //Check rotor settings;
+    //Check rotor settings;
   int check_rot = 0;
   for (int c=0;c<no_rotors;c++) {
     if (rotor[c].check_config(argv[c+3]) !=0)
@@ -124,6 +125,9 @@ int main(int argc, char** argv)
       pboard.swap_values(message[n]);
       
       cout << message[n];
+
+      //Write to output stream here
+      
       n++;
       //Set the new letter on the input switch for the next iteration
       input1.set_letter(n, message);  

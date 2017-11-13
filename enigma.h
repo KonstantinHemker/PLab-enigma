@@ -40,16 +40,16 @@ const char* error_description (int code);
 int check_message(char message[]);
 
 
+
 /*Class definitions*/
 
 class BaseModule  {
  protected:
   string settings;
   vector<int> token;
+  char letter;
  public:
   int check_numeric_char(char* filename);
-  //string return_settings() {
-  //  return settings;}
   int create_tokens (char* filename);
   int get_token (int n)  {
     return token[n]; }
@@ -75,17 +75,15 @@ class InputSwitch {
  private:
    char letter;
  public:
-  Plugboard (char l, char* cl_argument) : letter(l) {
-    //load_settings(cl_argument);
-    create_tokens(cl_argument);
+   Plugboard (char l, char* cl_argument) : letter(l) {
+     create_tokens(cl_argument);
   }
   void set_letter (char l)  {
     letter = l; }
   int check_config(char* cl_input);
   char return_letter() {
     return letter; }
-  //void get_settings;
-};
+  };
 
 class Reflector: public BaseModule {
  private:
@@ -109,19 +107,9 @@ class Rotor : public BaseModule {
   vector<int> rotor_positions;
   int notch[26];
  public:
-  /* Rotor (int NumberRotors, char* cl_argument) {
-      for (int c = 0; c <= NumberRotors; c++) {
-	create_tokens(cl_argument);
-	set_corr_token();
-	set_notch();
-      }
-    }
-  */
-   
   void init_rotor(char* cl_argument)
     {
     create_tokens(cl_argument);
-    set_corr_token();
     set_notch();
     relative_position = top_position;
   }    
@@ -130,14 +118,8 @@ class Rotor : public BaseModule {
       notch[n-25] = token[n+1];  }
   int get_notch(int n) {
     return notch[n]; }
-  int get_corr_token(int n) {
-    return corr_token[n]; }
-  void set_corr_token()  {
-    for (int n=0; n<=25; n++)
-      corr_token.push_back(n); }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  char get_letter() {
-    return letter; }
+  void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void load_top_position (int n, int nrotors) {
     top_position = rotor_positions[nrotors - (n+1)];  }
   void add_top_position(int n) {
@@ -146,13 +128,11 @@ class Rotor : public BaseModule {
     return top_position; }
   void swap_values(char &current_char);
   int check_config(char* cl_input);
-  void create_rot_position_tokens(char* cl_position);
+  int create_rot_position_tokens(char* cl_position);
   int check_rot_positions(int noRotors);
   void rotate_up(int i, Rotor* rotor);
-  void swap_values_backwards(char &current_char);
   void reset_relative_position()  {
     relative_position = letter; }
-  void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
   
 };
 
