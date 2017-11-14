@@ -197,6 +197,7 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
 
   //Swap the values according to token mapping
   swap_values(current_char);
+
     
     a++;
     if (a < noRotors)
@@ -250,19 +251,30 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
     {
       if ((token[i] == letter) && (i-top_position >=0))
 	{
-	  letter = i - top_position;
+	  letter = i ;
 	  current_char = letter + 65;
 	  break;
 	}
       else if ((token[i] == letter) && (i-top_position < 0))
 	{
-	  letter = i - top_position + 26;
+	  letter = i  + 26;
 	  current_char = letter + 65;
 	  break;
 	}
     }
-  a++;
-  if (a < noRotors)
+
+  
+  if (letter - top_position < 0) {
+    current_char = current_char - top_position + 26;
+    letter = current_char - 65;
+  }
+  else  {
+    current_char = current_char - top_position;
+    letter = current_char - 65;
+  }
+  
+  a--;
+  if (a >= 0)
     rotor[a].rotor_outwards(current_char, rotor, noRotors, a);
   
 }

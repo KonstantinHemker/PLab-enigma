@@ -104,21 +104,17 @@ int main(int argc, char** argv)
 	  cout << error_description(check_pb) << endl;
 	  return 0;
 	}
-
-      
+       
       //int i = 0;
       rotor[0].rotor_inwards(message[n], rotor, no_rotors, 0); //recursive function
       
       
       Reflector reflector(message[n], argv[2]);
       reflector.swap_values(message[n]);
-          
-      //Use the corr_token to pass the input backwards through the rotor
-      //(negative forloop)
       
-      rotor[0].rotor_outwards(message[n], rotor, no_rotors, 0);
       
-
+      rotor[no_rotors-1].rotor_outwards(message[n], rotor, no_rotors, no_rotors-1);
+      
       rotor[0].rotate_up(0, rotor);
 
       pboard.set_letter(message[n]);
@@ -127,7 +123,6 @@ int main(int argc, char** argv)
       cout << message[n];
 
       //Write to output stream here
-      
       n++;
       //Set the new letter on the input switch for the next iteration
       input1.set_letter(n, message);  
