@@ -14,7 +14,7 @@ int main(int argc, char** argv)
   //if (check_no_parameters(argc) == false)
   // return 1;
   int n = 0;
-  
+  vector<int> pos_token;
     
   char message[512]; 
   //What word is entered in the input switch? (character by character)
@@ -31,13 +31,13 @@ int main(int argc, char** argv)
 	  return check_input;
 	}
 
+   //Initialise the InputSwitch
   InputSwitch input1(message[n]);
   Plugboard pboard(input1.return_letter(), argv[1]);//Constructor loads settings and creates tokens
   
   int no_rotors;
   /*Change to up to 5 */
   no_rotors = argc - 4; 
-    
   Rotor rotor[no_rotors+1];
   
   for (int c = 0; c <= no_rotors; c++)
@@ -46,12 +46,13 @@ int main(int argc, char** argv)
     }
   
   //Sets rotor starting position tokens and check their validity
-  rotor[0].create_rot_position_tokens(argv[no_rotors+3]);
-
+  create_rot_position_tokens(argv[no_rotors+3], pos_token);
+  set_rotor_positions(0, pos_token, rotor, no_rotors); 
+  
 
   /*Checking initial settings of the rotor*/
   //Check validity of rotor positions
-  int check_pos = rotor[0].check_rot_positions(no_rotors);
+  int check_pos = rotor[0].check_rot_positions(no_rotors, pos_token);
   if (check_pos != 0){
     cout << error_description(check_pos) << endl;
     return check_pos;
@@ -68,10 +69,9 @@ int main(int argc, char** argv)
   }
 
   
-  for (int i = 0; i <no_rotors; i++)
-    {
-      rotor[i].load_top_position(i, no_rotors);
-    }
+  
+  //rotor[0].load_top_position(0, rotor, no_rotors);//recursive function
+    
 
   //Initializing the reflector
   Reflector reflector(message[n], argv[2]);

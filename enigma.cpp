@@ -78,10 +78,29 @@ int check_message(char message[])  {
   return 0;
 }
 
+void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token)  {
+  ifstream pos_input;
+  pos_input.open (cl_position);
+  int n;
+  while (pos_input >> n)  {
+    pos_token.push_back(n);
+  }
+  pos_input.close();
+}
+
+void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors)  {
+  rotor[n].set_top_position(n, noRotors, pos_token);
+  n++;
+  if (n < noRotors)
+    set_rotor_positions(n, pos_token, rotor, noRotors);
+  else
+    return;
+}
+								      
 
 /*Member functions*/
 
-int BaseModule::check_numeric_char(char* filename)  {
+int BaseModule::check_numeric_char(CharPtr filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   istreambuf_iterator<char> eos;
@@ -100,7 +119,7 @@ int BaseModule::check_numeric_char(char* filename)  {
 }
 
 
-int BaseModule::create_tokens (char* filename)  {
+int BaseModule::create_tokens (CharPtr filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   int n;
@@ -142,7 +161,7 @@ bool BaseModule::invalid_index ()  {
 }
 
 
-int Plugboard::check_config(char* cl_input)   {
+int Plugboard::check_config(CharPtr cl_input)   {
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
   for (unsigned int i=0; i<=token.size(); i++)
@@ -283,23 +302,13 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
 }
 
 
-int Rotor::create_rot_position_tokens(char* cl_position)  {
-  ifstream pos_input;
-  pos_input.open (cl_position);
-  int n;
-  while (pos_input >> n)  {
-    rotor_positions.push_back(n);
-  }
-  pos_input.close();
-  return rotor_positions.size();
-}
 
 
-int Rotor::check_rot_positions(int noRotors) {
-  int vsize = rotor_positions.size();
+int Rotor::check_rot_positions(int noRotors, vector<int> pos_token) {
+  int vsize = pos_token.size();
   //Check for invalid index
   for (int i=0; i<vsize; i++) {
-    if (rotor_positions[i] > 25)
+    if (pos_token[i] > 25)
       return 3;  //INVALID INDEX code
   }
   
@@ -314,7 +323,7 @@ int Rotor::check_rot_positions(int noRotors) {
 
 
 
-int Rotor::check_config (char* cl_input) {
+int Rotor::check_config (CharPtr cl_input) {
   //Check NON_NUMERIC_CHARACTER
   if (check_numeric_char(cl_input) != 0)
     return check_numeric_char(cl_input);

@@ -39,7 +39,11 @@ const char* error_description (int code);
 /*Function that checks the message input*/
 int check_message(char message[]);
 
+/*Function that creates all rotor position tokens */
+void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
 
+
+void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
 
 /*Class definitions*/
 
@@ -49,8 +53,8 @@ class BaseModule  {
   vector<int> token;
   char letter;
  public:
-  int check_numeric_char(char* filename);
-  int create_tokens (char* filename);
+  int check_numeric_char(CharPtr filename);
+  int create_tokens (CharPtr filename);
   int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
@@ -75,12 +79,12 @@ class InputSwitch {
  private:
    char letter;
  public:
-   Plugboard (char l, char* cl_argument) : letter(l) {
+   Plugboard (char l, CharPtr cl_argument) : letter(l) {
      create_tokens(cl_argument);
   }
   void set_letter (char l)  {
     letter = l; }
-  int check_config(char* cl_input);
+  int check_config(CharPtr cl_input);
   char return_letter() {
     return letter; }
   };
@@ -89,7 +93,7 @@ class Reflector: public BaseModule {
  private:
   char letter;
  public:
-  Reflector (char l, char* cl_argument) : letter(l) {
+  Reflector (char l, CharPtr cl_argument) : letter(l) {
     create_tokens(cl_argument); }
   char get_letter() {
     return letter; }
@@ -107,7 +111,7 @@ class Rotor : public BaseModule {
   vector<int> rotor_positions;
   int notch[26];
  public:
-  void init_rotor(char* cl_argument)
+  void init_rotor(CharPtr cl_argument)
     {
     create_tokens(cl_argument);
     set_notch();
@@ -120,16 +124,16 @@ class Rotor : public BaseModule {
     return notch[n]; }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  void load_top_position (int n, int nrotors) {
-    top_position = rotor_positions[nrotors - (n+1)];  }
+  void set_top_position (int n, int noRotors, vector<int> pos_token) {
+    top_position = pos_token[noRotors - (n+1)];
+  }
   void add_top_position(int n) {
     top_position += n; }
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
-  int check_config(char* cl_input);
-  int create_rot_position_tokens(char* cl_position);
-  int check_rot_positions(int noRotors);
+  int check_config(CharPtr cl_input);
+  int check_rot_positions(int noRotors, vector<int> pos_token);
   void rotate_up(int i, Rotor* rotor);
   void reset_relative_position()  {
     relative_position = letter; }
