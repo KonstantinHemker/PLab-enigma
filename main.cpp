@@ -10,41 +10,31 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-  //Check terminal input
-  //if (check_no_parameters(argc) == false)
-  // return 1;
   int n = 0;
   vector<int> pos_token;
-    
-  char message[512]; 
-  //What word is entered in the input switch? (character by character)
+  char message[1024]; 
+  int no_rotors = argc-4;
+  int error_code=0;
+  
+  //Remove this line for testing?
   cout << "Enter the message you would like to encode/decode (uppercase letters only): " << endl;
 
-  cin.getline (message, 511);
+  cin.getline (message, 1023);
 
-  //Check the message input
-  int check_input;
-  check_input = check_message(message);
-   if (check_input != 0)
-	{  
-	  cout << error_description(check_input) << endl;
-	  return check_input;
-	}
-
+  error_code = check_user_input(message, argc);
+  if (error_code > 0) {
+    cout << error_description(error_code) << endl;
+    return error_code;
+  }
+  
    //Initialise the InputSwitch
   InputSwitch input1(message[n]);
   Plugboard pboard(input1.return_letter(), argv[1]);//Constructor loads settings and creates tokens
-  
-  int no_rotors;
-  /*Change to up to 5 */
-  no_rotors = argc - 4; 
   Rotor rotor[no_rotors+1];
-  
   for (int c = 0; c <= no_rotors; c++)
     {
       rotor[c].init_rotor(argv[c+3]);
     }
-  
   //Sets rotor starting position tokens and check their validity
   create_rot_position_tokens(argv[no_rotors+3], pos_token);
   set_rotor_positions(0, pos_token, rotor, no_rotors); 
@@ -122,7 +112,7 @@ int main(int argc, char** argv)
       
       cout << message[n];
 
-      //Write to output stream here
+            
       n++;
       //Set the new letter on the input switch for the next iteration
       input1.set_letter(n, message);  
@@ -151,7 +141,6 @@ int main(int argc, char** argv)
       cout << endl;
     }
       cout << "The number of rotors is " << no_rotors << endl;
-
   return 0;
 
 }

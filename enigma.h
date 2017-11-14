@@ -31,7 +31,7 @@ class Rotor;
 
 
 /*Helper function declarations */
-bool check_no_parameters (int numberArguments);
+int check_no_parameters (int numberArguments);
 
 /*Function that carries the error descriptions*/
 const char* error_description (int code);
@@ -44,6 +44,9 @@ void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
 
 
 void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
+
+
+int check_user_input (char message[], int no_arguments);
 
 /*Class definitions*/
 

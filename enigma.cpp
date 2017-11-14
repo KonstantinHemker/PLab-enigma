@@ -52,24 +52,20 @@ const char* error_description (int code)  {
   return "No error in machine setup detected";
 }
 
+
+
 /*Helper function to check the number of parameters entered in the command line*/
-bool check_no_parameters (int numberArguments)  {
-  if (numberArguments != 7)
-    return false;
+int check_no_parameters (int numberArguments)  {
+  if (numberArguments < 5)
+    return 1;
   else
-    return true;
+    return 0;
 }
 /*End of function definition*/
 
-/*Helper functiont that converts a settings into the corresponding ASCII value*/
-int convert_to_ASCII (int vec)  {
-  int ASCII;
-  ASCII = vec+65;
-  return ASCII;
-}
-/*End of function definition*/
 
-/*Function that checks the message input*/
+
+/*Helper funtion that checks the message input*/
 int check_message(char message[])  {
   for (int n=0; message[n]!= '\0'; n++)
     {if (isupper(message[n]) == 0)
@@ -78,6 +74,7 @@ int check_message(char message[])  {
   return 0;
 }
 
+/*Function that creates the position tokens for all rotors in the system*/
 void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token)  {
   ifstream pos_input;
   pos_input.open (cl_position);
@@ -88,6 +85,7 @@ void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token)  {
   pos_input.close();
 }
 
+/*Recursive function that sets the rotor positions for each rotor*/
 void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors)  {
   rotor[n].set_top_position(n, noRotors, pos_token);
   n++;
@@ -96,7 +94,28 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
   else
     return;
 }
-								      
+
+
+int check_user_input (char message[], int no_arguments) {
+  int code;
+
+  /*Command line input*/
+  if (check_no_parameters(no_arguments) != 0) {
+    code = check_no_parameters(no_arguments);
+    return code;
+  }
+  /*Message input*/
+  if (check_message(message) != 0) {
+    code = check_message(message);
+    return code;
+  }
+}
+  
+
+
+
+//int check_engima_input ();
+
 
 /*Member functions*/
 
@@ -129,8 +148,6 @@ int BaseModule::create_tokens (CharPtr filename)  {
   enigmasettings.close();
   return token.size();
 }
-
-
 
 void BaseModule::swap_values (char &current_char)  {
 
