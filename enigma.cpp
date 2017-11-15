@@ -230,12 +230,17 @@ int Plugboard::check_config(CharPtr cl_input)   {
 
   if (empty == true)
     return 0;
-
+  
+  //Check for NON_NUMERIC CHARACTER
+  if((check_numeric_char(cl_input)) != 0)
+    return check_numeric_char(cl_input);
+  
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
-  for (unsigned int i=0; i<=token.size(); i++)
+
+  for (unsigned int i=0; i<=token.size()-1; i++)
     {
-      for (unsigned int c=0; c<=token.size(); c++) {
+      for (unsigned int c=0; c<=token.size()-1; c++) {
 	if ((token[i] == token[c]) && (c != i))
 	    return 5;
       }  //Impossible plugboard configuration
