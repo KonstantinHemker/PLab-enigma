@@ -48,10 +48,6 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 
 int check_user_input (char message, int no_arguments);
 
-/* Helper function to check whether input file is empty*/
-//Precondition:
-//Postcondition: 
-bool is_empty(ifstream &inFile);
 
 
 /*Class definitions*/
@@ -61,6 +57,7 @@ class BaseModule  {
   string settings;
   vector<int> token;
   char letter;
+  bool empty;
  public:
   int check_numeric_char(CharPtr filename);
   int load_tokens (CharPtr filename);
@@ -68,36 +65,28 @@ class BaseModule  {
     return token[n]; }
   void swap_values (char &current_char, int n); //represents the wiring
   bool invalid_index ();
+  bool is_empty (CharPtr filename);
 };
 
 
-/*
-class InputSwitch {
- private:
-  char letter;
- public:
-  InputSwitch (char &l) : letter(l) {}
-  void set_letter (char array) {
-    letter = array;}
-  char return_letter()  {
-    return letter; }
-};
-*/
-
- class Plugboard : public BaseModule {
+class Plugboard : public BaseModule {
  private:
    char letter;
  public:
-   void pass_through(char &message, int pb_wirings) {
+   void pass_through(char &message, int pb_wirings)
+   {
      set_letter(message);
      swap_values(message, pb_wirings);
    }
-   void set_letter (char l)  {
-    letter = l; }
-  int check_config(CharPtr cl_input);
-  char return_letter() {
-    return letter; }
-  };
+   void set_letter (char l)
+   {
+     letter = l;
+   }
+   int check_config(CharPtr cl_input);
+   
+   char return_letter() {
+     return letter; }
+};
 
 class Reflector: public BaseModule {
  private:
@@ -107,7 +96,7 @@ class Reflector: public BaseModule {
     load_tokens(cl_arguments); }
   void pass_through(char &message, int n) {
     letter = message;
-    swap_values(message, 0);
+    swap_values(message, n);
   }
   Reflector (char l, CharPtr cl_argument) : letter(l) {
     load_tokens(cl_argument); }

@@ -141,31 +141,63 @@ int BaseModule::check_numeric_char(CharPtr filename)  {
 }
 
 
-int BaseModule::load_tokens (CharPtr filename)  {
+int BaseModule::load_tokens (CharPtr filename)
+{
   ifstream enigmasettings;
-  enigmasettings.open(filename);
   int n;
-  if (is_empty(enigmasettings) == true)
+  if (is_empty(filename) == true)
     { return 0;
     }
-  else {
-    while (enigmasettings >> n) {
-      token.push_back(n);
+  enigmasettings.open(filename);
+  while (enigmasettings >> n) {
+    token.push_back(n);
     }
-  }
-    enigmasettings.close();
-    return token.size();
+  enigmasettings.close();
+  return token.size();
 }
 
-bool is_empty (ifstream &inFile)
+
+bool BaseModule::is_empty (CharPtr filename)
 {
-  return inFile.peek() == std::ifstream::traits_type::eof();
-}
+  ifstream inStream;
+  inStream.open(filename);
+  inStream.seekg(0, inStream.end);
+  int n = inStream.tellg();
 
+  if (n == 1)
+     empty = true;
+  else
+     empty = false;
+  inStream.close();
+  return empty;
+}
+  
+
+
+
+/*
+bool BaseModule::is_empty (CharPtr filename)
+{
+  ifstream inStream;
+  inStream.open(filename);
+  
+  if (inStream.peek() == std::ifstream::traits_type::eof())
+    {
+      empty = true;
+      inStream.close();
+      return empty;
+    }
+  else {
+    empty = false;
+    inStream.close();
+    return false;
+  }
+}
+*/
 
 void BaseModule::swap_values (char &current_char, int n)  {
 
-  if (n!= 0) //Avoids seg fault if the file was empty
+  if (n == 0) //Avoids seg fault if the file was empty
     return;
 
   for (unsigned int i=0; i <= token.size(); i++)
@@ -195,6 +227,10 @@ bool BaseModule::invalid_index ()  {
 
 
 int Plugboard::check_config(CharPtr cl_input)   {
+
+  if (empty == true)
+    return 0;
+
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
   for (unsigned int i=0; i<=token.size(); i++)

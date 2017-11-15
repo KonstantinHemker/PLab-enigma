@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	{
 	  cout << error_description(error_code) << endl;
 	  return error_code;
-      }
+	}
       
       //input1.set_letter(message);
       
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
       rotor[0].rotor_inwards(message, rotor, no_rotors, 0); //recursive function
       
      
-      reflector.pass_through(message, 0);
+      reflector.pass_through(message, 1);
       
       
       rotor[no_rotors-1].rotor_outwards(message, rotor, no_rotors, no_rotors-1);
