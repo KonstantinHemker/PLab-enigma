@@ -98,13 +98,13 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 int check_user_input (char message, int no_arguments) {
   int code;
 
-  /*Command line input*/
+  /*Command line input
   if (check_no_parameters(no_arguments) != 0) {
     code = check_no_parameters(no_arguments);
     return code;
-  }
+    }*/
   /*Message input*/
-  else if (check_message(message) != 0) {
+  if (check_message(message) != 0) {
     code = check_message(message);
     return code;
   }
