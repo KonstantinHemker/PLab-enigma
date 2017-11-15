@@ -87,7 +87,7 @@ int main(int argc, char** argv)
       if (check_pb != 0)
 	{  
 	  cout << error_description(check_pb) << endl;
-	  return 0;
+	  return check_pb;
 	}
       
       //int i = 0;
