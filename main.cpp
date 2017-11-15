@@ -14,15 +14,18 @@ int main(int argc, char** argv)
   char message; 
   int no_rotors = argc-4;
   int error_code=0;
+  int plugboard_wirings;
   
    //Initialise the InputSwitch
-  InputSwitch input1(message); /** MARKER**/
-  Plugboard pboard(argv[1]);//Constructor loads settings and creates tokens
+  //InputSwitch input1(message); 
+
+  Plugboard plugboard;
+  plugboard_wirings = plugboard.load_tokens(argv[1]);
+
   Rotor rotor[no_rotors+1];
   for (int c = 0; c <= no_rotors; c++)
-    {
-      rotor[c].init_rotor(argv[c+3]);
-    }
+    rotor[c].init_rotor(argv[c+3]);
+    
   //Sets rotor starting position tokens and check their validity
   create_rot_position_tokens(argv[no_rotors+3], pos_token);
   set_rotor_positions(0, pos_token, rotor, no_rotors); 
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
   }
 
   //Initializing the reflector
-  Reflector reflector(message, argv[2]);  /**MARKER**/
+  Reflector reflector(argv[2]);  /**MARKER**/
   //Check reflector
   int check_rf;
   check_rf = reflector.check_config();
@@ -68,22 +71,20 @@ int main(int argc, char** argv)
     {
 
       error_code = check_user_input(message, argc);
-      if (error_code > 0) {
-	cout << error_description(error_code) << endl;
-	return error_code;
+      if (error_code > 0)
+	{
+	  cout << error_description(error_code) << endl;
+	  return error_code;
       }
       
-      input1.set_letter(message);
+      //input1.set_letter(message);
       
       
-      //Passes in the new letter of the input class into the plugboard      
-      pboard.set_letter(input1.return_letter()); 
-      //swap values
-      pboard.swap_values(message);
-
+      plugboard.pass_through(message, plugboard_wirings);
+     
         //Check plugboard configurations
       int check_pb;
-      check_pb = pboard.check_config(argv[1]);
+      check_pb = plugboard.check_config(argv[1]);
       if (check_pb != 0)
 	{  
 	  cout << error_description(check_pb) << endl;
@@ -93,17 +94,15 @@ int main(int argc, char** argv)
       //int i = 0;
       rotor[0].rotor_inwards(message, rotor, no_rotors, 0); //recursive function
       
-      
-      Reflector reflector(message, argv[2]);
-      reflector.swap_values(message);
+     
+      reflector.pass_through(message, 0);
       
       
       rotor[no_rotors-1].rotor_outwards(message, rotor, no_rotors, no_rotors-1);
       
       rotor[0].rotate_up(0, rotor);
 
-      pboard.set_letter(message);
-      pboard.swap_values(message);
+      plugboard.pass_through(message, plugboard_wirings);
       
       cout << message;
 
@@ -119,7 +118,7 @@ int main(int argc, char** argv)
   cout << "Plugboard - first six tokens configurations:" << endl;    
   for (unsigned int i = 0; i < 6; i++)
     {
-      cout << pboard.get_token(i) << " "; }
+      cout << plugboard.get_token(i) << " "; }
       
 	  
   cout << endl;

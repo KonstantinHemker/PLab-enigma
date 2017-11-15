@@ -56,7 +56,7 @@ const char* error_description (int code)  {
 
 /*Helper function to check the number of parameters entered in the command line*/
 int check_no_parameters (int numberArguments)  {
-  if (numberArguments < 5)
+  if (numberArguments < 4) //Note that having no rotors is valid as well
     return 1;
   else
     return 0;
@@ -98,11 +98,11 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 int check_user_input (char message, int no_arguments) {
   int code;
 
-  /*Command line input
+  /*  Command line input */
   if (check_no_parameters(no_arguments) != 0) {
     code = check_no_parameters(no_arguments);
     return code;
-    }*/
+    }
   /*Message input*/
   if (check_message(message) != 0) {
     code = check_message(message);
@@ -112,6 +112,8 @@ int check_user_input (char message, int no_arguments) {
     return 0;
 }
   
+
+
 
 
 
@@ -139,19 +141,32 @@ int BaseModule::check_numeric_char(CharPtr filename)  {
 }
 
 
-int BaseModule::create_tokens (CharPtr filename)  {
+int BaseModule::load_tokens (CharPtr filename)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   int n;
-  while (enigmasettings >> n) {
-    token.push_back(n);
+  if (is_empty(enigmasettings) == true)
+    { return 0;
+    }
+  else {
+    while (enigmasettings >> n) {
+      token.push_back(n);
+    }
   }
-  enigmasettings.close();
-  return token.size();
+    enigmasettings.close();
+    return token.size();
 }
 
-void BaseModule::swap_values (char &current_char)  {
+bool is_empty (ifstream &inFile)
+{
+  return inFile.peek() == std::ifstream::traits_type::eof();
+}
 
+
+void BaseModule::swap_values (char &current_char, int n)  {
+
+  if (n!= 0) //Avoids seg fault if the file was empty
+    return;
 
   for (unsigned int i=0; i <= token.size(); i++)
     {
