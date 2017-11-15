@@ -66,12 +66,11 @@ int check_no_parameters (int numberArguments)  {
 
 
 /*Helper funtion that checks the message input*/
-int check_message(char message[])  {
-  for (int n=0; message[n]!= '\0'; n++)
-    {if (isupper(message[n]) == 0)
+int check_message(char message)  {
+    if (isupper(message) == 0)
 	return 2; //Code for invalid input character
-    }
-  return 0;
+    else
+      return 0;
 }
 
 /*Function that creates the position tokens for all rotors in the system*/
@@ -96,7 +95,7 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 }
 
 
-int check_user_input (char message[], int no_arguments) {
+int check_user_input (char message, int no_arguments) {
   int code;
 
   /*Command line input*/
@@ -105,10 +104,12 @@ int check_user_input (char message[], int no_arguments) {
     return code;
   }
   /*Message input*/
-  if (check_message(message) != 0) {
+  else if (check_message(message) != 0) {
     code = check_message(message);
     return code;
   }
+  else
+    return 0;
 }
   
 
@@ -171,9 +172,9 @@ void BaseModule::swap_values (char &current_char)  {
 
 
 bool BaseModule::invalid_index ()  {
-  for (unsigned int n=0; n <= token.size()  ; n++) {
+  for (unsigned int n=0; n <= token.size()-1  ; n++) {
       if ((token[n] > 25) || (token[n] < 0))
-      return true; }  
+	return true; }  
   return false;
 }
 
@@ -342,8 +343,6 @@ int Rotor::check_rot_positions(int noRotors, vector<int> pos_token) {
   }
   
   //Check whether there are sufficient configurations for the number of rotors
-  cout << vsize << endl;
-  cout << noRotors << endl;
   if (noRotors <= vsize)
     return 0;
   else

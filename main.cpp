@@ -10,26 +10,14 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-  int n = 0;
   vector<int> pos_token;
-  char message[1024]; 
+  char message; 
   int no_rotors = argc-4;
   int error_code=0;
   
-  //Remove this line for testing?
-  cout << "Enter the message you would like to encode/decode (uppercase letters only): " << endl;
-
-  cin.getline (message, 1023);
-
-  error_code = check_user_input(message, argc);
-  if (error_code > 0) {
-    cout << error_description(error_code) << endl;
-    return error_code;
-  }
-  
    //Initialise the InputSwitch
-  InputSwitch input1(message[n]);
-  Plugboard pboard(input1.return_letter(), argv[1]);//Constructor loads settings and creates tokens
+  InputSwitch input1(message); /** MARKER**/
+  Plugboard pboard(argv[1]);//Constructor loads settings and creates tokens
   Rotor rotor[no_rotors+1];
   for (int c = 0; c <= no_rotors; c++)
     {
@@ -48,7 +36,7 @@ int main(int argc, char** argv)
     return check_pos;
   }
     
-    //Check rotor settings;
+  //Check rotor settings;
   int check_rot = 0;
   for (int c=0;c<no_rotors;c++) {
     if (rotor[c].check_config(argv[c+3]) !=0)
@@ -58,13 +46,8 @@ int main(int argc, char** argv)
 	return check_rot; }
   }
 
-  
-  
-  //rotor[0].load_top_position(0, rotor, no_rotors);//recursive function
-    
-
   //Initializing the reflector
-  Reflector reflector(message[n], argv[2]);
+  Reflector reflector(message, argv[2]);  /**MARKER**/
   //Check reflector
   int check_rf;
   check_rf = reflector.check_config();
@@ -75,16 +58,28 @@ int main(int argc, char** argv)
     }
 
   
-  
+  /* 
   cout  << "The starting position of the rotor 1 is " << rotor[0].get_top_position() << endl;
   cout << "The starting position of rotor 2 is " << rotor[1].get_top_position() << endl;;
-   
-  while (message[n] != '\0')
+  */
+  cin >> std::ws >> message;
+
+  while (!cin.eof()) 
     {
+
+      error_code = check_user_input(message, argc);
+      if (error_code > 0) {
+	cout << error_description(error_code) << endl;
+	return error_code;
+      }
+      
+      input1.set_letter(message);
+      
+      
       //Passes in the new letter of the input class into the plugboard      
       pboard.set_letter(input1.return_letter()); 
       //swap values
-      pboard.swap_values(message[n]);
+      pboard.swap_values(message);
 
         //Check plugboard configurations
       int check_pb;
@@ -94,33 +89,33 @@ int main(int argc, char** argv)
 	  cout << error_description(check_pb) << endl;
 	  return 0;
 	}
-       
+      
       //int i = 0;
-      rotor[0].rotor_inwards(message[n], rotor, no_rotors, 0); //recursive function
+      rotor[0].rotor_inwards(message, rotor, no_rotors, 0); //recursive function
       
       
-      Reflector reflector(message[n], argv[2]);
-      reflector.swap_values(message[n]);
+      Reflector reflector(message, argv[2]);
+      reflector.swap_values(message);
       
       
-      rotor[no_rotors-1].rotor_outwards(message[n], rotor, no_rotors, no_rotors-1);
+      rotor[no_rotors-1].rotor_outwards(message, rotor, no_rotors, no_rotors-1);
       
       rotor[0].rotate_up(0, rotor);
 
-      pboard.set_letter(message[n]);
-      pboard.swap_values(message[n]);
+      pboard.set_letter(message);
+      pboard.swap_values(message);
       
-      cout << message[n];
+      cout << message;
 
-            
-      n++;
-      //Set the new letter on the input switch for the next iteration
-      input1.set_letter(n, message);  
+      cin >> std::ws >> message;
+
+      //Set the new letter on the input switch for the next iteration 
       
     }
+  
   cout << endl;
 
-  //Developer Checks
+  /*Developer Checks
   cout << "Plugboard - first six tokens configurations:" << endl;    
   for (unsigned int i = 0; i < 6; i++)
     {
@@ -141,6 +136,9 @@ int main(int argc, char** argv)
       cout << endl;
     }
       cout << "The number of rotors is " << no_rotors << endl;
-  return 0;
+
+      */
+
+      return 0;
 
 }

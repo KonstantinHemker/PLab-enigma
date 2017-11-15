@@ -37,7 +37,7 @@ int check_no_parameters (int numberArguments);
 const char* error_description (int code);
 
 /*Function that checks the message input*/
-int check_message(char message[]);
+int check_message(char message);
 
 /*Function that creates all rotor position tokens */
 void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
@@ -46,7 +46,7 @@ void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
 void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
 
 
-int check_user_input (char message[], int no_arguments);
+int check_user_input (char message, int no_arguments);
 
 /*Class definitions*/
 
@@ -71,8 +71,8 @@ class InputSwitch {
   char letter;
  public:
   InputSwitch (char &l) : letter(l) {}
-  void set_letter (int pos, char array[]) {
-    letter = array[pos];}
+  void set_letter (char array) {
+    letter = array;}
   char return_letter()  {
     return letter; }
 };
@@ -82,7 +82,7 @@ class InputSwitch {
  private:
    char letter;
  public:
-   Plugboard (char l, CharPtr cl_argument) : letter(l) {
+   Plugboard (CharPtr cl_argument)  {
      create_tokens(cl_argument);
   }
   void set_letter (char l)  {
