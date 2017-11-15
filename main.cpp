@@ -12,43 +12,52 @@ int main(int argc, char** argv)
 {
   vector<int> pos_token;
   char message; 
-  int no_rotors = argc-4;
+  int no_rotors;
   int error_code=0;
   int plugboard_wirings;
-  
+
+
+  if (argc < 5)
+    no_rotors = 0;
+  else
+    no_rotors = argc-4;
    //Initialise the InputSwitch
   //InputSwitch input1(message); 
 
   Plugboard plugboard;
   plugboard_wirings = plugboard.load_tokens(argv[1]);
 
+
   Rotor rotor[no_rotors+1];
-  for (int c = 0; c <= no_rotors; c++)
-    rotor[c].init_rotor(argv[c+3]);
+  if (no_rotors > 0)
+    {
+      for (int c = 0; c <= no_rotors; c++)
+	rotor[c].init_rotor(argv[c+3]);
     
-  //Sets rotor starting position tokens and check their validity
-  create_rot_position_tokens(argv[no_rotors+3], pos_token);
-  set_rotor_positions(0, pos_token, rotor, no_rotors); 
+      //Sets rotor starting position tokens and check their validity
+      create_rot_position_tokens(argv[no_rotors+3], pos_token);
+      set_rotor_positions(0, pos_token, rotor, no_rotors); 
   
 
-  /*Checking initial settings of the rotor*/
-  //Check validity of rotor positions
-  int check_pos = rotor[0].check_rot_positions(no_rotors, pos_token);
-  if (check_pos != 0){
-    cout << error_description(check_pos) << endl;
-    return check_pos;
-  }
+      /*Checking initial settings of the rotor*/
+      //Check validity of rotor positions
+      int check_pos = rotor[0].check_rot_positions(no_rotors, pos_token);
+      if (check_pos != 0){
+	cout << error_description(check_pos) << endl;
+	return check_pos;
+      }
     
-  //Check rotor settings;
-  int check_rot = 0;
-  for (int c=0;c<no_rotors;c++) {
-    if (rotor[c].check_config(argv[c+3]) !=0)
-      {
-	check_rot = rotor[c].check_config(argv[c+3]);
-	cout << error_description(check_rot) << endl;
-	return check_rot; }
-  }
-
+      //Check rotor settings;
+      int check_rot = 0;
+      for (int c=0;c<no_rotors;c++) {
+	if (rotor[c].check_config(argv[c+3]) !=0)
+	  {
+	    check_rot = rotor[c].check_config(argv[c+3]);
+	    cout << error_description(check_rot) << endl;
+	    return check_rot; }
+      }
+    }
+  
   //Initializing the reflector
   Reflector reflector(argv[2]);  /**MARKER**/
   //Check reflector
@@ -70,7 +79,7 @@ int main(int argc, char** argv)
   while (!cin.eof()) 
     {
 
-      error_code = check_user_input(message, argc);
+      error_code = check_user_input(message, argc, no_rotors);
       if (error_code > 0)
 	{
 	  cout << error_description(error_code) << endl;
@@ -91,7 +100,7 @@ int main(int argc, char** argv)
 	  return check_pb;
 	}
       
-      //int i = 0;
+      
       rotor[0].rotor_inwards(message, rotor, no_rotors, 0); //recursive function
       
      
@@ -100,7 +109,7 @@ int main(int argc, char** argv)
       
       rotor[no_rotors-1].rotor_outwards(message, rotor, no_rotors, no_rotors-1);
       
-      rotor[0].rotate_up(0, rotor);
+      rotor[0].rotate_up(0, rotor, no_rotors);
 
       plugboard.pass_through(message, plugboard_wirings);
       

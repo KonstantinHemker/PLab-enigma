@@ -55,8 +55,10 @@ const char* error_description (int code)  {
 
 
 /*Helper function to check the number of parameters entered in the command line*/
-int check_no_parameters (int numberArguments)  {
-  if (numberArguments < 4) //Note that having no rotors is valid as well
+int check_no_parameters (int numberArguments, int noRotors)  {
+  if ((noRotors = 0) && (numberArguments < 3))
+    return 1;
+  else if ((noRotors > 0) && (numberArguments < 5))
     return 1;
   else
     return 0;
@@ -95,12 +97,12 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 }
 
 
-int check_user_input (char message, int no_arguments) {
+int check_user_input (char message, int no_arguments, int noRotors) {
   int code;
 
-  /*  Command line input */
-  if (check_no_parameters(no_arguments) != 0) {
-    code = check_no_parameters(no_arguments);
+  /* Command line input */
+  if (check_no_parameters(no_arguments, noRotors) != 0) {
+    code = check_no_parameters(no_arguments, noRotors);
     return code;
     }
   /*Message input*/
@@ -174,27 +176,6 @@ bool BaseModule::is_empty (CharPtr filename)
   
 
 
-
-/*
-bool BaseModule::is_empty (CharPtr filename)
-{
-  ifstream inStream;
-  inStream.open(filename);
-  
-  if (inStream.peek() == std::ifstream::traits_type::eof())
-    {
-      empty = true;
-      inStream.close();
-      return empty;
-    }
-  else {
-    empty = false;
-    inStream.close();
-    return false;
-  }
-}
-*/
-
 void BaseModule::swap_values (char &current_char, int n)  {
 
   if (n == 0) //Avoids seg fault if the file was empty
@@ -258,6 +239,8 @@ int Plugboard::check_config(CharPtr cl_input)   {
 
 
 void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a) {
+  if (noRotors == 0)
+    return;
   //Set the letter according to current rotation of rotor
   letter = current_char - 65;
   if (letter + top_position > 25) {
@@ -310,6 +293,9 @@ void Rotor::swap_values(char &current_char) {
   
   
 void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
+  if (noRotors == 0)
+    return;
+  
   //Set letter input for pb
   letter = current_char -65;
   if (letter - top_position < 0) {
@@ -355,7 +341,11 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
 
 
   
-void Rotor::rotate_up(int i, Rotor* rotor) {
+void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
+
+  if (noRotors == 0)
+    return;
+
   bool top_position_meets_notch;
   int a = 0;
   do 
@@ -375,12 +365,12 @@ void Rotor::rotate_up(int i, Rotor* rotor) {
 	{
 	  rotor[i].add_top_position(-25);
 	  i++;
-	  rotate_up(i, rotor); }
+	  rotate_up(i, rotor, noRotors); }
       else
 	{
 	  rotor[i].add_top_position(1);
 	  i++;
-	  rotor[i].rotate_up(i, rotor);
+	  rotor[i].rotate_up(i, rotor, noRotors);
 	}
       a++;
     }
