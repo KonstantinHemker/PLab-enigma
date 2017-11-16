@@ -29,13 +29,13 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
   case NON_NUMERIC_CHARACTER:
     {
     if (class_type == "plugboard")
-      cerr << "Non-numeric character in" << class_type << " file " << cl_argument[n];
+      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << " ";
     else if (class_type == "reflector")
-      cerr << "Non-numeric character in" << class_type << " file " << cl_argument[n];
+      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << " ";
     else if (class_type == "rotor positions")
-      cerr << "Non-numeric character in mapping for " << class_type << " file " << cl_argument[n];
+      cerr << "Non-numeric character in mapping for " << class_type << " file " << cl_argument[n] << " ";
     else
-      cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[n];
+      cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[n] << " ";
     break;
     }
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
@@ -45,18 +45,18 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
     {
-    cerr << "Incorrect number of parameters in " << class_type << " file " << cl_argument [n];
+      cerr << "Incorrect number of parameters in " << class_type << " file " << cl_argument [n] << " ";
     break;
     }
   case INVALID_ROTOR_MAPPING:
     {
   //cerr << "Invalid mapping of input 13 to output 3 (output 3 is already mapped to from input 6)";
-    cerr << "Not all inputs mapped in " << class_type << " file: " << cl_argument [n];
-     break;
+      cerr << "Not all inputs mapped in " << class_type << " file: " << cl_argument [n] << " ";
+      break;
     }
   case NO_ROTOR_STARTING_POSITION:
     {
-    cerr << "No starting position for rotor 0 in" << class_type << " file: " << cl_argument;
+    cerr << "No starting position for rotor 0 in " << class_type << " file: " << cl_argument;
      break;
     }
   case INVALID_REFLECTOR_MAPPING:
@@ -221,28 +221,32 @@ void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
    
 
 
-int BaseModule::load_tokens (CharPtr filename)
+void BaseModule::load_tokens (CharPtr filename, int& error_code)
 {
   ifstream enigmasettings;
   int n;
-  if (is_valid(filename) == true)
+  if (is_valid(filename, error_code) == true)
     {
       empty = true;
-      return 0;	      
+      return;	      
     }
   enigmasettings.open(filename);
   while (enigmasettings >> n) {
     token.push_back(n);
     }
   enigmasettings.close();
-  return token.size();
 }
 
 
-bool BaseModule::is_valid (CharPtr filename)
+bool BaseModule::is_valid (CharPtr filename, int &error_code)
 {
   ifstream inStream;
   inStream.open(filename);
+  if (inStream.fail())
+    {
+      error_code = 11;
+      return true;
+    }
   inStream.seekg(0, inStream.end);
   int n = inStream.tellg();
 

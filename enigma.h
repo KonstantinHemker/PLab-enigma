@@ -65,15 +65,15 @@ class BaseModule  {
   char letter;
   bool empty;
  public:
-  void check_numeric_char (CharPtr filename, int& error_code);
-  int load_tokens (CharPtr filename);
+  void check_numeric_char (CharPtr filename, int &error_code);
+  void load_tokens (CharPtr filename, int &error_code);
   int get_token (int n)  {
     return token[n]; }
   int get_token_size() {
     return token.size(); }   
   void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
-  bool is_valid (CharPtr filename);
+  bool is_valid(CharPtr filename, int &error_code);
 };
 
 
@@ -81,9 +81,9 @@ class Plugboard : public BaseModule {
  private:
    char letter;
  public:
-   Plugboard (CharPtr cl_argument)
+   Plugboard (CharPtr cl_argument, int &error_code)
      {
-       load_tokens (cl_argument);
+       load_tokens (cl_argument, error_code);
      }
    void pass_through(char &message)
    {
@@ -106,14 +106,12 @@ class Reflector: public BaseModule {
  private:
   char letter;
  public:
-  Reflector(CharPtr cl_arguments) {
-    load_tokens(cl_arguments); }
+  Reflector(CharPtr cl_arguments, int &error_code) {
+    load_tokens(cl_arguments, error_code); }
   void pass_through(char &message, int n) {
     letter = message;
     swap_values(message);
   }
-  Reflector (char l, CharPtr cl_argument) : letter(l) {
-    load_tokens(cl_argument); }
   char get_letter() {
     return letter; }
   void check_config(CharPtr cl_input, int &error_code);
@@ -127,9 +125,9 @@ class Rotor : public BaseModule {
   vector<int> rotor_positions;
   int notch[26];
  public:
-  void init_rotor(CharPtr cl_argument)
+  void init_rotor(CharPtr cl_argument, int &error_code)
     {
-    load_tokens(cl_argument);
+      load_tokens(cl_argument, error_code);
     set_notch();
     }    
   void set_notch () {

@@ -21,62 +21,27 @@ int main(int argc, char** argv)
     no_rotors = 0;
   else
     no_rotors = argc-4;
+ 
+
+  Plugboard plugboard (argv[1], error_code);
+
   
-  /*
-  check_command_line_input(argc, no_rotors, error_code);
-  if (error_code > 0)
-	{
-	  cerr << error_description(error_code) << endl;
-	  return error_code;
-	}
-  */
-
-  Plugboard plugboard (argv[1]);
-
-  /*
-  plugboard.check_config(argv[1], error_code);
-    if (error_code > 0)
-	{
-	  cerr << error_description(error_code) << endl;
-	  return error_code;
-	}
-  */
     //Top part goes in constructor
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
       for (int c = 0; c <= no_rotors; c++)
-	rotor[c].init_rotor(argv[c+3]);
+	rotor[c].init_rotor(argv[c+3], error_code);
     
       //Sets rotor starting position tokens and check their validity
       create_rot_position_tokens(argv[no_rotors+3], pos_token);
       set_rotor_positions(0, pos_token, rotor, no_rotors); 
-    }
-      
-      /*
-      //Check validity of rotor positions
-      error_code = rotor[0].check_rot_positions(no_rotors, pos_token);
-      if (error_code != 0){
-	cerr << error_description(error_code) << endl;
-	return error_code;
-      }
-    
-      //Check rotor settings;
-      for (int c=0;c<no_rotors;c++) 
-	{
-	rotor[c].check_config(argv[c+3], error_code);
-	if (error_code != 0)
-	  {
-	    cerr << error_description(error_code) << endl;
-	   return error_code;
-	  }
-	}
-	
+     
     }
 
-      */
+    
   //Initializing the reflector
-  Reflector reflector(argv[2]); 
+  Reflector reflector(argv[2], error_code); 
 
 
 
@@ -86,28 +51,8 @@ int main(int argc, char** argv)
       error_description(error_code, class_type, argv, n, reflector);
       return error_code;
     }
-  /*
-  reflector.check_config(argv[2], error_code);
-  if (error_code != 0)
-    {
-      cerr << error_description(error_code) << endl;
-      return error_code;
-    }
-  */
 
-  
-  /* Developer Checks
- cout << "Notches Start of testing:" << endl;
-  cout << "Left: " << rotor[0].get_notch(0) << endl;
-  cout << "Middle: " << rotor[1].get_notch(0) << endl;
-  cout << "Right: " << rotor[2].get_notch(0) << endl;
-  cout << "Position at start: " << endl;
-  cout << "Left: " << rotor[0].get_top_position() << endl;
-  cout << "Middle: " << rotor[1].get_top_position() << endl;
-  cout << "Right: " << rotor[2].get_top_position() << endl;
-  */
-  
-  cin >> std::ws >> message;
+   cin >> std::ws >> message;
 
   while (!cin.eof()) 
     {
@@ -143,51 +88,7 @@ int main(int argc, char** argv)
       //Set the new letter on the input switch for the next iteration 
       
     }
-  
 
-
-  /*
-
-  cout << endl;
-  cout << "Position at start: " << endl;
-  cout << "Rotor 1: " << rotor[0].get_top_position() << endl;
-  cout << "Rotor 2: " << rotor[1].get_top_position() << endl;
-  */
-
-
-
-
-
-
-
-
-  
-  /*Developer Checks
-  cout << "Plugboard - first six tokens configurations:" << endl;    
-  for (unsigned int i = 0; i < 6; i++)
-    {
-      cout << plugboard.get_token(i) << " "; }
-      
-	  
-  cout << endl;
-
-  for (int a = 0; a < no_rotors; a++)
-    {
-     
-    
- 
-      cout << "First two rotor configurations for rotor " << a+1 << ":"  << endl;
-      cout << rotor[a].get_token(0) << endl;
-      cout << rotor[a].get_token(1) << endl;
-      cout << "The first notch is at postition: " << rotor[a].get_notch(0) << endl;
-      cout << "The second notch is at position: " << rotor[a].get_notch(1) << endl;
-      cout << "After encrypting, the top position of rotor" << a+1 << " is " << rotor[a].get_top_position() << endl;
-      cout << endl;
-    }
-      cout << "The number of rotors is " << no_rotors << endl;
-
-      */
-
-      return 0;
+return 0;
 
 }
