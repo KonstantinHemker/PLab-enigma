@@ -28,13 +28,17 @@ typedef char* CharPtr;
 class InputSwitch;
 class Plugboard;
 class Rotor;
-
+class Reflector;
 
 /*Helper function declarations */
 int check_no_parameters (int numberArguments, int noRotors);
 
+/*Function that checks the enigma setup*/
+void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
+
+
 /*Function that carries the error descriptions*/
-const char* error_description (int code);
+void error_description (int code, string class_type, CharPtr cl_argument[], int n, Reflector &reflector);
 
 /*Function that checks the message input*/
 int check_message(char message);
@@ -65,6 +69,8 @@ class BaseModule  {
   int load_tokens (CharPtr filename);
   int get_token (int n)  {
     return token[n]; }
+  int get_token_size() {
+    return token.size(); }   
   void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
   bool is_valid (CharPtr filename);
@@ -141,8 +147,8 @@ class Rotor : public BaseModule {
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
-  int check_config(CharPtr cl_input, int &error_code);
-  int check_rot_positions(int noRotors, vector<int> pos_token);
+  void check_config(CharPtr cl_input, int &error_code);
+  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code);
   void rotate_up(int i, Rotor* rotor, int noRotors);
   void adjust_up (char &current_char);
   void adjust_down (char &current_char);

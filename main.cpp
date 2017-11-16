@@ -14,30 +14,34 @@ int main(int argc, char** argv)
   char message; 
   int no_rotors;
   int error_code=0;
+  string class_type;
+  int n;
  
   if (argc < 5)
     no_rotors = 0;
   else
     no_rotors = argc-4;
-
   
+  /*
   check_command_line_input(argc, no_rotors, error_code);
   if (error_code > 0)
 	{
 	  cerr << error_description(error_code) << endl;
 	  return error_code;
 	}
-  
+  */
 
   Plugboard plugboard (argv[1]);
+
+  /*
   plugboard.check_config(argv[1], error_code);
     if (error_code > 0)
 	{
 	  cerr << error_description(error_code) << endl;
 	  return error_code;
 	}
-
-  
+  */
+    //Top part goes in constructor
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
@@ -47,9 +51,9 @@ int main(int argc, char** argv)
       //Sets rotor starting position tokens and check their validity
       create_rot_position_tokens(argv[no_rotors+3], pos_token);
       set_rotor_positions(0, pos_token, rotor, no_rotors); 
-
+    }
       
-      /*Checking initial settings of the rotor*/
+      /*
       //Check validity of rotor positions
       error_code = rotor[0].check_rot_positions(no_rotors, pos_token);
       if (error_code != 0){
@@ -64,23 +68,34 @@ int main(int argc, char** argv)
 	if (error_code != 0)
 	  {
 	    cerr << error_description(error_code) << endl;
-	    return error_code;
+	   return error_code;
 	  }
 	}
 	
     }
 
-  
+      */
   //Initializing the reflector
   Reflector reflector(argv[2]); 
-  
+
+
+
+  check_enigma_setup(n, argc, argv, no_rotors, error_code, class_type, plugboard, rotor, reflector, pos_token);
+  if (error_code > 0)
+    {
+      error_description(error_code, class_type, argv, n, reflector);
+      return error_code;
+    }
+  /*
   reflector.check_config(argv[2], error_code);
   if (error_code != 0)
     {
       cerr << error_description(error_code) << endl;
       return error_code;
     }
+  */
 
+  
   /* Developer Checks
  cout << "Notches Start of testing:" << endl;
   cout << "Left: " << rotor[0].get_notch(0) << endl;
@@ -102,7 +117,7 @@ int main(int argc, char** argv)
       check_message_input(message, error_code);
       if (error_code > 0)
 	{
-	  cerr << error_description(error_code) << endl;
+	  error_description(error_code, class_type, argv, n, reflector);
 	  return error_code;
 	}
       
