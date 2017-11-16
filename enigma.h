@@ -144,6 +144,8 @@ class Rotor : public BaseModule {
   int check_config(CharPtr cl_input, int &error_code);
   int check_rot_positions(int noRotors, vector<int> pos_token);
   void rotate_up(int i, Rotor* rotor, int noRotors);
+  void adjust_up (char &current_char);
+  void adjust_down (char &current_char);
 };
 
 

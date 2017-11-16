@@ -246,24 +246,34 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
 }
 
 
+void Rotor::adjust_up(char& current_char)
+{
+  if (current_char + top_position > 90) 
+    current_char += top_position + -26;
+  else
+    current_char += top_position;
+}
+
+
+
+void Rotor::adjust_down(char&current_char)
+{
+  if (current_char - top_position < 65) 
+    current_char = current_char - top_position + 26;
+  else  
+    current_char = current_char - top_position;
+}
+
+
 void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
-  //Set the letter according to current rotation of rotor
-  letter = current_char - 65;
-  if (letter + top_position > 25) {
-    letter += top_position -26;
-    current_char = letter + 65;
-  }
-    else {
-    letter += top_position;
-    current_char = letter + 65;
-    }
+
+  adjust_up(current_char);
 
   //Swap the values according to token mapping
   swap_values(current_char);
-
-    
+  
     a--;
     if (a >= 0)
       rotor[a].rotor_inwards(current_char, rotor, noRotors, a);
@@ -275,6 +285,7 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
 
 void Rotor::swap_values(char &current_char) {
   int i = 0;
+  letter = current_char -65;
   while (i<=25)
     {
       if (i == letter) {
@@ -283,65 +294,41 @@ void Rotor::swap_values(char &current_char) {
 	break;
       }
       i++;
-    }
-      
+    }      
   if (token[i] + top_position > 25) {
-    letter = (token[i] + top_position) - 26;
-    current_char = letter + 65;
+    current_char = token[i] + top_position -26 + 65;
     return;
   }
   else {
-    letter = token[i] + top_position;
-    current_char = letter + 65;
+    current_char = token[i] + top_position +65;
     return;
   } 
 }
 
-    
-  
+
   
 void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
-  
- //Set letter input for pb
-  letter = current_char -65;
-  if (letter - top_position < 0) {
-    current_char = current_char - top_position + 26;
-    letter = current_char - 65;
-  }
-  else  {
-    current_char = current_char - top_position;
-    letter = current_char - 65;
-  }
-  
+
+  adjust_down(current_char);
+
   for (int i = 0; i<=25; i++)
     {
-      if ((token[i] == letter) && (i-top_position >=0))
+      if ((token[i] == current_char-65) && (i-top_position >=0))
 	{
-	  letter = i ;
-	  current_char = letter + 65;
+	  current_char = i + 65;
 	  break;
 	}
-      else if ((token[i] == letter) && (i-top_position < 0))
+      else if ((token[i] == current_char-65) && (i-top_position < 0))
 	{
-	  letter = i  + 26;
-	  current_char = letter + 65;
+	  current_char =i  + 26 +65;
 	  break;
 	}
     }
 
 
-   //Set letter input for pb
-  letter = current_char -65;
-  if (letter - top_position < 0) {
-    current_char = current_char - top_position + 26;
-    letter = current_char - 65;
-  }
-  else  {
-    current_char = current_char - top_position;
-    letter = current_char - 65;
-  }
+  adjust_down(current_char);
   
   a++;
   if (a < noRotors)
