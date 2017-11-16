@@ -16,7 +16,7 @@
 const char* error_description (int code)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
-    return "usage: enigma plugbaord-file reflector-file (<rotor-file>* rotor-positions)?";
+    return "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?";
     break;
   case INVALID_INPUT_CHARACTER:
     return "Error: Invalid input character";
@@ -136,7 +136,7 @@ void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
   for (unsigned int c=0; c< settings.size(); c++)
     {
       if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\n'))
-	return;
+	{}
       else
 	error_code = 4;
     }
@@ -210,31 +210,39 @@ bool BaseModule::invalid_index ()  {
 }
 
 
-int Plugboard::check_config(CharPtr cl_input, int &error_code)   {
+void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
 
   if (empty == true)
-    return 0;
+    return;
   
   //Check for NON_NUMERIC CHARACTER
   check_numeric_char(cl_input, error_code);
   if(error_code != 0)
-    return error_code;
+    return;
   
   if (token.size()%2 == 1)
-    return 6; //Incorrect number of plugboard parameters
+    {
+      error_code = 6;//Incorrect number of plugboard parameters
+      return;
+    }
 
   for (unsigned int i=0; i<=token.size()-1; i++)
     {
       for (unsigned int c=0; c<=token.size()-1; c++) {
-	if ((token[i] == token[c]) && (c != i))
-	    return 5;
+	if ((token[i] == token[c]) && (c != i)) {
+	    error_code = 5;
+	    return;
+	}
+	
       }  //Impossible plugboard configuration
     }
   //Check for INVALID INDEX
   if (invalid_index() == true)
-    return 3; 
-    
-  return 0;
+    {
+      error_code = 3;
+      return;
+    }
+ 
 }
 
 

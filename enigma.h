@@ -88,7 +88,7 @@ class Plugboard : public BaseModule {
    {
      letter = l;
    }
-   int check_config(CharPtr cl_input, int &error_code);
+   void check_config(CharPtr cl_input, int &error_code);
    
    char return_letter() {
      return letter; }
