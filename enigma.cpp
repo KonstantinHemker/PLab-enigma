@@ -352,7 +352,7 @@ void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
   int a = 0;
   do 
     {
-      if (rotor[i].get_notch(a) == rotor[i].get_top_position()) 
+      if (rotor[i].get_notch(a) == rotor[i].get_top_position()+1) //Checks for notch at the next pos 
 	top_position_meets_notch = true;
       else
 	top_position_meets_notch = false;
