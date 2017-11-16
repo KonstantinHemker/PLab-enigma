@@ -258,8 +258,8 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
   swap_values(current_char);
 
     
-    a++;
-    if (a < noRotors)
+    a--;
+    if (a >= 0)
       rotor[a].rotor_inwards(current_char, rotor, noRotors, a);
     else
       return;
@@ -335,8 +335,8 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
     letter = current_char - 65;
   }
   
-  a--;
-  if (a >= 0)
+  a++;
+  if (a < noRotors)
     rotor[a].rotor_outwards(current_char, rotor, noRotors, a);
   
 }
@@ -366,12 +366,12 @@ void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
       else if ((top_position_meets_notch == true) && (rotor[i].get_top_position() == 25))
 	{
 	  rotor[i].add_top_position(-25);
-	  i++;
+	  i--;
 	  rotate_up(i, rotor, noRotors); }
       else
 	{
 	  rotor[i].add_top_position(1);
-	  i++;
+	  i--;
 	  rotor[i].rotate_up(i, rotor, noRotors);
 	}
       a++;

@@ -100,15 +100,15 @@ int main(int argc, char** argv)
 	}
       
       
-      rotor[0].rotor_inwards(message, rotor, no_rotors, 0); //recursive function
+      rotor[no_rotors-1].rotor_inwards(message, rotor, no_rotors, no_rotors-1); //recursive function
       
      
       reflector.pass_through(message, 1);
       
       
-      rotor[no_rotors-1].rotor_outwards(message, rotor, no_rotors, no_rotors-1);
+      rotor[0].rotor_outwards(message, rotor, no_rotors, 0);
       
-      rotor[0].rotate_up(0, rotor, no_rotors);
+      rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
 
       plugboard.pass_through(message);
       
