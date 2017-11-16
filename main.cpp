@@ -69,11 +69,13 @@ int main(int argc, char** argv)
 
 
  cout << "Notches Start of testing:" << endl;
-  cout << "Rotor 1: " << rotor[0].get_notch(0) << endl;
-  cout << "Rotor 2: " << rotor[1].get_notch(0) << endl;
+  cout << "Left: " << rotor[0].get_notch(0) << endl;
+  cout << "Middle: " << rotor[1].get_notch(0) << endl;
+  cout << "Right: " << rotor[2].get_notch(0) << endl;
   cout << "Position at start: " << endl;
-  cout << "Rotor 1: " << rotor[0].get_top_position() << endl;
-   cout << "Rotor 2: " << rotor[1].get_top_position() << endl;
+  cout << "Left: " << rotor[0].get_top_position() << endl;
+  cout << "Middle: " << rotor[1].get_top_position() << endl;
+  cout << "Right: " << rotor[2].get_top_position() << endl;
   
   
   cin >> std::ws >> message;
@@ -81,6 +83,8 @@ int main(int argc, char** argv)
   while (!cin.eof()) 
     {
 
+      rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
+      
       error_code = check_user_input(message, argc, no_rotors);
       if (error_code > 0)
 	{
@@ -108,7 +112,7 @@ int main(int argc, char** argv)
       
       rotor[0].rotor_outwards(message, rotor, no_rotors, 0);
       
-      rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
+      //rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
 
       plugboard.pass_through(message);
       
