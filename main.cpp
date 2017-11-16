@@ -68,6 +68,13 @@ int main(int argc, char** argv)
     }
 
 
+ cout << "Notches Start of testing:" << endl;
+  cout << "Rotor 1: " << rotor[0].get_notch(0) << endl;
+  cout << "Rotor 2: " << rotor[1].get_notch(0) << endl;
+  cout << "Position at start: " << endl;
+  cout << "Rotor 1: " << rotor[0].get_top_position() << endl;
+   cout << "Rotor 2: " << rotor[1].get_top_position() << endl;
+  
   
   cin >> std::ws >> message;
 
@@ -114,6 +121,23 @@ int main(int argc, char** argv)
     }
   
 
+
+
+
+  cout << endl;
+  cout << "Position at start: " << endl;
+  cout << "Rotor 1: " << rotor[0].get_top_position() << endl;
+  cout << "Rotor 2: " << rotor[1].get_top_position() << endl;
+
+
+
+
+
+
+
+
+
+  
   /*Developer Checks
   cout << "Plugboard - first six tokens configurations:" << endl;    
   for (unsigned int i = 0; i < 6; i++)
@@ -125,7 +149,9 @@ int main(int argc, char** argv)
 
   for (int a = 0; a < no_rotors; a++)
     {
-      
+     
+    
+ 
       cout << "First two rotor configurations for rotor " << a+1 << ":"  << endl;
       cout << rotor[a].get_token(0) << endl;
       cout << rotor[a].get_token(1) << endl;
