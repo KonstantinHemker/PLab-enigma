@@ -16,7 +16,7 @@
 const char* error_description (int code)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
-    return "Error: Insufficient number of parameters";
+    return "usage: enigma plugbaord-file reflector-file (<rotor-file>* rotor-positions)?";
     break;
   case INVALID_INPUT_CHARACTER:
     return "Error: Invalid input character";
@@ -25,13 +25,13 @@ const char* error_description (int code)  {
     return "Error: Invalid index";
      break;
   case NON_NUMERIC_CHARACTER:
-    return "Error: Non numeric character";
+    return "Non-numeric character in plugboard file plugboard.pb";
      break;
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
     return "Error: Impossible plugboard configuration";
      break;
   case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
-    return "Error: Incorrect number of plugboard parameters";
+    return "Incorrect number of parameters in plugboard file plugboard.pb";
     break;
   case INVALID_ROTOR_MAPPING:
     return "Error: Invalid rotor mapping";
@@ -148,7 +148,9 @@ int BaseModule::load_tokens (CharPtr filename)
   ifstream enigmasettings;
   int n;
   if (is_empty(filename) == true)
-    { return 0;
+    {
+      empty = true;
+      return 0;
     }
   enigmasettings.open(filename);
   while (enigmasettings >> n) {
@@ -166,7 +168,7 @@ bool BaseModule::is_empty (CharPtr filename)
   inStream.seekg(0, inStream.end);
   int n = inStream.tellg();
 
-  if (n == 1)
+  if (n == 0)
      empty = true;
   else
      empty = false;
@@ -176,9 +178,9 @@ bool BaseModule::is_empty (CharPtr filename)
   
 
 
-void BaseModule::swap_values (char &current_char, int n)  {
+void BaseModule::swap_values (char &current_char)  {
 
-  if (n == 0) //Avoids seg fault if the file was empty
+  if (empty == true) //Avoids seg fault if the file was empty
     return;
 
   for (unsigned int i=0; i <= token.size(); i++)

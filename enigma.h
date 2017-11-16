@@ -63,7 +63,7 @@ class BaseModule  {
   int load_tokens (CharPtr filename);
   int get_token (int n)  {
     return token[n]; }
-  void swap_values (char &current_char, int n); //represents the wiring
+  void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
   bool is_empty (CharPtr filename);
 };
@@ -73,10 +73,14 @@ class Plugboard : public BaseModule {
  private:
    char letter;
  public:
-   void pass_through(char &message, int pb_wirings)
+   Plugboard (CharPtr cl_argument)
+     {
+       load_tokens (cl_argument);
+     }
+   void pass_through(char &message)
    {
      set_letter(message);
-     swap_values(message, pb_wirings);
+     swap_values(message);
    }
    void set_letter (char l)
    {
@@ -96,7 +100,7 @@ class Reflector: public BaseModule {
     load_tokens(cl_arguments); }
   void pass_through(char &message, int n) {
     letter = message;
-    swap_values(message, n);
+    swap_values(message);
   }
   Reflector (char l, CharPtr cl_argument) : letter(l) {
     load_tokens(cl_argument); }
