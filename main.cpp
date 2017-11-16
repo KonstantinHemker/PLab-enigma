@@ -15,16 +15,29 @@ int main(int argc, char** argv)
   int no_rotors;
   int error_code=0;
  
-
-
   if (argc < 5)
     no_rotors = 0;
   else
     no_rotors = argc-4;
 
+  
+  check_command_line_input(argc, no_rotors, error_code);
+  if (error_code > 0)
+	{
+	  cerr << error_description(error_code) << endl;
+	  return error_code;
+	}
+  
 
   Plugboard plugboard (argv[1]);
+  plugboard.check_config(argv[1], error_code);
+    if (error_code > 0)
+	{
+	  cerr << error_description(error_code) << endl;
+	  return error_code;
+	}
 
+  
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
@@ -45,16 +58,18 @@ int main(int argc, char** argv)
       }
     
       //Check rotor settings;
-      int error_code;
-      for (int c=0;c<no_rotors;c++) {
-	if (rotor[c].check_config(argv[c+3]) !=0)
+      for (int c=0;c<no_rotors;c++) 
+	{
+	rotor[c].check_config(argv[c+3], error_code);
+	if (error_code != 0)
 	  {
-	    error_code = rotor[c].check_config(argv[c+3]);
 	    cerr << error_description(error_code) << endl;
 	    return error_code;
 	  }
-      }
+	}
+	
     }
+
   
   //Initializing the reflector
   Reflector reflector(argv[2]);  /**MARKER**/
@@ -67,7 +82,7 @@ int main(int argc, char** argv)
       return error_code;
     }
 
-
+  /* Developer Checks
  cout << "Notches Start of testing:" << endl;
   cout << "Left: " << rotor[0].get_notch(0) << endl;
   cout << "Middle: " << rotor[1].get_notch(0) << endl;
@@ -76,7 +91,7 @@ int main(int argc, char** argv)
   cout << "Left: " << rotor[0].get_top_position() << endl;
   cout << "Middle: " << rotor[1].get_top_position() << endl;
   cout << "Right: " << rotor[2].get_top_position() << endl;
-  
+  */
   
   cin >> std::ws >> message;
 
@@ -85,7 +100,7 @@ int main(int argc, char** argv)
 
       rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
       
-      error_code = check_user_input(message, argc, no_rotors);
+      check_message_input(message, error_code);
       if (error_code > 0)
 	{
 	  cerr << error_description(error_code) << endl;
@@ -94,15 +109,7 @@ int main(int argc, char** argv)
       
       
       plugboard.pass_through(message);
-     
-        //Check plugboard configurations
-      error_code = plugboard.check_config(argv[1]);
-      if (error_code != 0)
-	{  
-	  cerr << error_description(error_code) << endl;
-	  return error_code;
-	}
-      
+          
       
       rotor[no_rotors-1].rotor_inwards(message, rotor, no_rotors, no_rotors-1); //recursive function
       
@@ -112,8 +119,7 @@ int main(int argc, char** argv)
       
       rotor[0].rotor_outwards(message, rotor, no_rotors, 0);
       
-      //rotor[no_rotors-1].rotate_up(no_rotors-1, rotor, no_rotors);
-
+      
       plugboard.pass_through(message);
       
       cout << message;
@@ -126,13 +132,13 @@ int main(int argc, char** argv)
   
 
 
-
+  /*
 
   cout << endl;
   cout << "Position at start: " << endl;
   cout << "Rotor 1: " << rotor[0].get_top_position() << endl;
   cout << "Rotor 2: " << rotor[1].get_top_position() << endl;
-
+  */
 
 
 

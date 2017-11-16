@@ -56,7 +56,7 @@ const char* error_description (int code)  {
 
 /*Helper function to check the number of parameters entered in the command line*/
 int check_no_parameters (int numberArguments, int noRotors)  {
-  if ((noRotors = 0) && (numberArguments < 3))
+  if ((noRotors == 0) && (numberArguments < 3))
     return 1;
   else if ((noRotors > 0) && (numberArguments < 5))
     return 1;
@@ -97,23 +97,24 @@ void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotor
 }
 
 
-int check_user_input (char message, int no_arguments, int noRotors) {
-  int code;
-
-  /* Command line input */
-  if (check_no_parameters(no_arguments, noRotors) != 0) {
-    code = check_no_parameters(no_arguments, noRotors);
-    return code;
-    }
+void check_message_input (char message, int &error_code)
+{
   /*Message input*/
-  if (check_message(message) != 0) {
-    code = check_message(message);
-    return code;
-  }
+  if (check_message(message) != 0)
+    error_code = check_message(message);
   else
-    return 0;
+    error_code = 0;
 }
   
+
+void check_command_line_input (int no_arguments, int noRotors, int &error_code)
+{
+/* Command line input */
+  if (check_no_parameters(no_arguments, noRotors) != 0) 
+    error_code = check_no_parameters(no_arguments, noRotors);
+  else
+    error_code = 0;
+}
 
 
 
@@ -124,7 +125,7 @@ int check_user_input (char message, int no_arguments, int noRotors) {
 
 /*Member functions*/
 
-int BaseModule::check_numeric_char(CharPtr filename)  {
+void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
   istreambuf_iterator<char> eos;
@@ -135,22 +136,22 @@ int BaseModule::check_numeric_char(CharPtr filename)  {
   for (unsigned int c=0; c< settings.size(); c++)
     {
       if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\n'))
-	{}
+	return;
       else
-	return 4;
+	error_code = 4;
     }
-  return 0;       
 }
+   
 
 
 int BaseModule::load_tokens (CharPtr filename)
 {
   ifstream enigmasettings;
   int n;
-  if (is_empty(filename) == true)
+  if (is_valid(filename) == true)
     {
       empty = true;
-      return 0;
+      return 0;	      
     }
   enigmasettings.open(filename);
   while (enigmasettings >> n) {
@@ -161,7 +162,7 @@ int BaseModule::load_tokens (CharPtr filename)
 }
 
 
-bool BaseModule::is_empty (CharPtr filename)
+bool BaseModule::is_valid (CharPtr filename)
 {
   ifstream inStream;
   inStream.open(filename);
@@ -172,7 +173,7 @@ bool BaseModule::is_empty (CharPtr filename)
      empty = true;
   else
      empty = false;
-  inStream.close();
+
   return empty;
 }
   
@@ -209,14 +210,15 @@ bool BaseModule::invalid_index ()  {
 }
 
 
-int Plugboard::check_config(CharPtr cl_input)   {
+int Plugboard::check_config(CharPtr cl_input, int &error_code)   {
 
   if (empty == true)
     return 0;
   
   //Check for NON_NUMERIC CHARACTER
-  if((check_numeric_char(cl_input)) != 0)
-    return check_numeric_char(cl_input);
+  check_numeric_char(cl_input, error_code);
+  if(error_code != 0)
+    return error_code;
   
   if (token.size()%2 == 1)
     return 6; //Incorrect number of plugboard parameters
@@ -231,10 +233,6 @@ int Plugboard::check_config(CharPtr cl_input)   {
   //Check for INVALID INDEX
   if (invalid_index() == true)
     return 3; 
-
-  //Check for NON_NUMERIC CHARACTER
-  if((check_numeric_char(cl_input)) != 0)
-    return check_numeric_char(cl_input);
     
   return 0;
 }
@@ -399,10 +397,11 @@ int Rotor::check_rot_positions(int noRotors, vector<int> pos_token) {
 
 
 
-int Rotor::check_config (CharPtr cl_input) {
+int Rotor::check_config (CharPtr cl_input, int &error_code) {
   //Check NON_NUMERIC_CHARACTER
-  if (check_numeric_char(cl_input) != 0)
-    return check_numeric_char(cl_input);
+  check_numeric_char(cl_input, error_code);
+  if (error_code != 0)
+    return error_code;
   
   //Check INVALID_ROTOR_MAPPING
   for (int c=0; c<=25;c++)  {

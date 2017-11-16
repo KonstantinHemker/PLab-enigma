@@ -42,12 +42,14 @@ int check_message(char message);
 /*Function that creates all rotor position tokens */
 void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
 
-
+/*Function that sets the rotor positions across all rotors*/
 void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
 
+/*Function which checks the input by the program user*/
+void check_message_input (char message, int &error_code);
 
-int check_user_input (char message, int no_arguments, int noRotors);
-
+/*Function that checks the command line input of the user*/
+void check_command_line_input(int no_arguments, int noRotors, int &error_code); 
 
 
 /*Class definitions*/
@@ -59,13 +61,13 @@ class BaseModule  {
   char letter;
   bool empty;
  public:
-  int check_numeric_char(CharPtr filename);
+  void check_numeric_char (CharPtr filename, int& error_code);
   int load_tokens (CharPtr filename);
   int get_token (int n)  {
     return token[n]; }
   void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
-  bool is_empty (CharPtr filename);
+  bool is_valid (CharPtr filename);
 };
 
 
@@ -86,11 +88,13 @@ class Plugboard : public BaseModule {
    {
      letter = l;
    }
-   int check_config(CharPtr cl_input);
+   int check_config(CharPtr cl_input, int &error_code);
    
    char return_letter() {
      return letter; }
 };
+
+
 
 class Reflector: public BaseModule {
  private:
@@ -112,7 +116,6 @@ class Reflector: public BaseModule {
 
 class Rotor : public BaseModule {
  private:
-  int number; //refers to the number of the rotor (from right to left on the configuration)
   int top_position;
   char letter;
   vector<int> rotor_positions;
@@ -122,8 +125,7 @@ class Rotor : public BaseModule {
     {
     load_tokens(cl_argument);
     set_notch();
-    //relative_position = top_position;
-  }    
+    }    
   void set_notch () {
     for (unsigned int n=25; n<=token.size()-1; n++)
       notch[n-25] = token[n+1];  }
@@ -139,11 +141,9 @@ class Rotor : public BaseModule {
   int get_top_position() {
     return top_position; }
   void swap_values(char &current_char);
-  int check_config(CharPtr cl_input);
+  int check_config(CharPtr cl_input, int &error_code);
   int check_rot_positions(int noRotors, vector<int> pos_token);
   void rotate_up(int i, Rotor* rotor, int noRotors);
- 
-  
 };
 
 
