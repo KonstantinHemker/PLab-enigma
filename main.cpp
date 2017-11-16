@@ -72,10 +72,9 @@ int main(int argc, char** argv)
 
   
   //Initializing the reflector
-  Reflector reflector(argv[2]);  /**MARKER**/
-  //Check reflector
+  Reflector reflector(argv[2]); 
   
-  error_code = reflector.check_config();
+  reflector.check_config(argv[2], error_code);
   if (error_code != 0)
     {
       cerr << error_description(error_code) << endl;

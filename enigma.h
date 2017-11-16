@@ -110,7 +110,7 @@ class Reflector: public BaseModule {
     load_tokens(cl_argument); }
   char get_letter() {
     return letter; }
-  int check_config();
+  void check_config(CharPtr cl_input, int &error_code);
 };
 
 

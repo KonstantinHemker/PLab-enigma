@@ -256,7 +256,7 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
     current_char = letter + 65;
   }
     else {
-    letter +=top_position;
+    letter += top_position;
     current_char = letter + 65;
     }
 
@@ -286,7 +286,7 @@ void Rotor::swap_values(char &current_char) {
     }
       
   if (token[i] + top_position > 25) {
-    letter = (token[i] + top_position) -26;
+    letter = (token[i] + top_position) - 26;
     current_char = letter + 65;
     return;
   }
@@ -304,7 +304,7 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
   if (noRotors == 0)
     return;
   
-  //Set letter input for pb
+ //Set letter input for pb
   letter = current_char -65;
   if (letter - top_position < 0) {
     current_char = current_char - top_position + 26;
@@ -331,7 +331,9 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
 	}
     }
 
-  
+
+   //Set letter input for pb
+  letter = current_char -65;
   if (letter - top_position < 0) {
     current_char = current_char - top_position + 26;
     letter = current_char - 65;
@@ -426,23 +428,33 @@ int Rotor::check_config (CharPtr cl_input, int &error_code) {
 }
 
 
-int Reflector::check_config()  {
+void Reflector::check_config(CharPtr cl_input, int &error_code)  {
+
+  //Check NON NUMERIC CHARACTER
+  check_numeric_char(cl_input, error_code);
+  if (error_code != 0)
+    return;
+
+  //Check INCORRECT NUMBER OF REFLECTOR PARAMETERS
+  if (token.size() != 26)
+    {
+      error_code = 10;
+      return;
+    }
+
   //Check INVALID REFLECTOR MAPPING
   for (int c=0; c<=25;c++)  {
     for (int i=0; i<=25; i++) {
       if ((token[i] == token[c]) && (c!=i))
-	  return 9;
+	error_code = 9;
+      return;
     }
   }
 
   //Check for INVALID INDEX
   if (invalid_index() == true)
-    return 3;
-   
-
-  //Check INCORRECT NUMBER OF REFLECTOR PARAMETERS
-  if (token.size() != 26)
-    return 10;
-  
-    return 0;
+    {
+      error_code = 3;
+      return;
+    }
 }
