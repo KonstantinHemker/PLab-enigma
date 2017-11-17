@@ -140,7 +140,8 @@ class Rotor : public BaseModule {
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void set_top_position (int n, int noRotors, vector<int> pos_token) {
-    top_position = pos_token[noRotors - (n+1)];
+    //top_position = pos_token[noRotors - (n+1)]
+    top_position = pos_token[n];
   }
   void add_top_position(int n) {
     top_position += n; }
