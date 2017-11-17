@@ -44,7 +44,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
 int check_message(char message);
 
 /*Function that creates all rotor position tokens */
-void create_rot_position_tokens(CharPtr cl_position, vector<int> &pos_token);
+void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code);
 
 /*Function that sets the rotor positions across all rotors*/
 void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
@@ -133,7 +133,7 @@ class Rotor : public BaseModule {
       set_notch();
     }    
   void set_notch () {
-    for (unsigned int n=25; n<=token.size()-1; n++)
+    for (unsigned int n=25; n <= token.size()-1; n++)
       notch[n-25] = token[n+1];  }
   int get_notch(int n) {
     return notch[n]; }
@@ -148,7 +148,7 @@ class Rotor : public BaseModule {
     return top_position; }
   void swap_values(char &current_char);
   void check_config(CharPtr cl_input, int &error_code);
-  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code);
+  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument);
   void rotate_up(int i, Rotor* rotor, int noRotors);
   void adjust_up (char &current_char);
   void adjust_down (char &current_char);

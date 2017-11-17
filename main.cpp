@@ -30,13 +30,11 @@ int main(int argc, char** argv)
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
-      for (int c = 0; c <= no_rotors; c++)
+      for (int c = 0; c < no_rotors; c++)
 	rotor[c].init_rotor(argv[c+3], error_code);
     
       //Sets rotor starting position tokens and check their validity
-      create_rot_position_tokens(argv[no_rotors+3], pos_token);
-      set_rotor_positions(0, pos_token, rotor, no_rotors); 
-     
+      load_rotor_positions(argv[no_rotors+3], pos_token, error_code); 
     }
 
     
@@ -52,6 +50,8 @@ int main(int argc, char** argv)
       return error_code;
     }
 
+  set_rotor_positions(0, pos_token, rotor, no_rotors);
+  
    cin >> std::ws >> message;
 
   while (!cin.eof()) 
