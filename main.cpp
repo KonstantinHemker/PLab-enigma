@@ -30,23 +30,25 @@ int main(int argc, char** argv)
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
-      for (int c = 0; c < no_rotors; c++)
+      for (int c = 0; c <= no_rotors; c++)
 	rotor[c].init_rotor(argv[c+3], error_code);
     
       //Sets rotor starting position tokens and check their validity
-      load_rotor_positions(argv[no_rotors+3], pos_token, error_code); 
+      load_rotor_positions(argv[no_rotors+3], pos_token, error_code);
+      set_rotor_positions(0, pos_token, rotor, no_rotors);
     }
 
     
   //Initializing the reflector
   Reflector reflector(argv[2], error_code); 
 
-
+  
 
   check_enigma_setup(n, argc, argv, no_rotors, error_code, class_type, plugboard, rotor, reflector, pos_token);
   if (error_code > 0)
     {
       error_description(error_code, class_type, argv, n, reflector);
+
       return error_code;
     }
 

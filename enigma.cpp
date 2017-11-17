@@ -28,7 +28,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case NON_NUMERIC_CHARACTER:
     {
-    if (class_type == "plugboard")
+      if ((class_type == "plugboard") || (class_type == "rotor positions"))
       cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
     else if (class_type == "reflector")
       cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
@@ -384,12 +384,12 @@ void Rotor::swap_values(char &current_char) {
       }
       i++;
     }      
-  if (token[i] + top_position > 25) {
-    current_char = token[i] + top_position - 26 + 65;
+  if (token[i] - top_position < 0) {
+    current_char = token[i] - top_position + 26 + 65;
     return;
   }
   else {
-    current_char = token[i] + top_position + 65;
+    current_char = token[i] - top_position + 65;
     return;
   } 
 }
@@ -400,7 +400,7 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
   if (noRotors == 0)
     return;
   
-  adjust_down(current_char);
+  adjust_up(current_char);
 
   for (int i = 0; i<=25; i++)
     {
