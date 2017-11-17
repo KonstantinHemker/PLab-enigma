@@ -9,6 +9,7 @@
 
 #include "enigma.h"
 
+using namespace std;
 
 /*Helper functions*/
 
@@ -152,6 +153,25 @@ int check_message(char message)  {
     else
       return 0;
 }
+
+
+/*Function that initialises the array of rotors*/
+/*
+void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_token, Rotor rotor[])
+{
+  if (noRotors == 0)
+    return;
+  else
+    {
+      for (int c = 0; c <= noRotors; c++)
+	rotor[c].init_rotor(cl_argument[c+3], error_code);
+      
+      //Sets rotor starting position tokens and check their validity
+      load_rotor_positions(cl_argument[noRotors+3], pos_token, error_code);
+      set_rotor_positions(0, pos_token, rotor, noRotors);
+    }
+}
+*/
 
 /*Function that creates the position tokens for all rotors in the system*/
 void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code)  {
