@@ -128,7 +128,9 @@ class Rotor : public BaseModule {
   void init_rotor(CharPtr cl_argument, int &error_code)
     {
       load_tokens(cl_argument, error_code);
-    set_notch();
+      if (error_code > 0)
+	return;
+      set_notch();
     }    
   void set_notch () {
     for (unsigned int n=25; n<=token.size()-1; n++)

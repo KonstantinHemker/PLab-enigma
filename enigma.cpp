@@ -86,6 +86,9 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
 /*Function that checks all enigma setup errors */
 void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
 {
+  if (error_code > 0)
+    return;
+
   check_command_line_input(cl_arguments, noRotors, error_code);
   if (error_code > 0)
     return;
@@ -227,7 +230,6 @@ void BaseModule::load_tokens (CharPtr filename, int& error_code)
   int n;
   if (is_valid(filename, error_code) == true)
     {
-      empty = true;
       return;	      
     }
   enigmasettings.open(filename);
@@ -369,19 +371,19 @@ void Rotor::swap_values(char &current_char) {
   letter = current_char -65;
   while (i<=25)
     {
-      if (i == letter) {
-	letter = token[i];
-	current_char = letter + 65;
+      if (i == current_char - 65) {
+	
+	current_char = token[i] + 65;
 	break;
       }
       i++;
     }      
-  if (token[i] + top_position > 25) {
-    current_char = token[i] + top_position -26 + 65;
+  if (token[i] - top_position < 0) {
+    current_char = token[i] - top_position +26 + 65;
     return;
   }
   else {
-    current_char = token[i] + top_position +65;
+    current_char = token[i] - top_position + 65;
     return;
   } 
 }
@@ -392,23 +394,26 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
   if (noRotors == 0)
     return;
 
-  adjust_down(current_char);
+  adjust_up(current_char);
+  //adjust_down(current_char);
 
   for (int i = 0; i<=25; i++)
     {
-      if ((token[i] == current_char-65) && (i-top_position >=0))
+      if ((token[i] == current_char-65))
 	{
 	  current_char = i + 65;
 	  break;
 	}
-      else if ((token[i] == current_char-65) && (i-top_position < 0))
-	{
-	  current_char =i  + 26 +65;
-	  break;
-	}
+	  //	  break;
+	  //	}
+	  // else if ((token[i] == current_char-65) && (i+top_position > 25))
+	  //	{
+	  //current_char =i - 26 +65;
+	  //break;
+	
     }
 
-
+  //adjust_up(current_char);
   adjust_down(current_char);
   
   a++;
