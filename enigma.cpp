@@ -32,8 +32,6 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
       cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
     else if (class_type == "reflector")
       cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
-    else if (class_type == "rotor positions")
-      cerr << "Non-numeric character in mapping for " << class_type << " file " << cl_argument[n] << endl;
     else
       cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[n] << endl;
     break;
@@ -401,8 +399,7 @@ void Rotor::swap_values(char &current_char) {
 void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
-
-  //adjust_up(current_char);
+  
   adjust_down(current_char);
 
   for (int i = 0; i<=25; i++)
@@ -413,8 +410,7 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
 	  break;
 	}
     }
-
-  //adjust_up(current_char);
+ 
   adjust_down(current_char);
   
   a++;
