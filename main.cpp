@@ -34,10 +34,12 @@ int main(int argc, char** argv)
       
       for (int c = 0; c < no_rotors; c++)
 	rotor[c].init_rotor(argv[c+3], error_code);
-    
-      //Sets rotor starting position tokens and check their validity
-      load_rotor_positions(argv[no_rotors+3], pos_token, error_code);
-      set_rotor_positions(0, pos_token, rotor, no_rotors, error_code, nrotor);
+      if (error_code == 0)
+	{
+	  //Sets rotor starting position tokens and check their validity
+	  load_rotor_positions(argv[no_rotors+3], pos_token, error_code);
+	  set_rotor_positions(0, pos_token, rotor, no_rotors, error_code, nargument);
+	}
       
     }
   

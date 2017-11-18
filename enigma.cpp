@@ -24,7 +24,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     break;
   case INVALID_INDEX:
     {
-      cerr << "Error: Invalid index";
+      cerr << "Invalid index in " << class_type << " file " << cl_argument[nargument] << endl;
       break;
     }
   case NON_NUMERIC_CHARACTER:
@@ -39,7 +39,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
     {
-      cerr << "Error: Impossible plugboard configuration" << endl;
+      cerr << "Impossible " << class_type << " configurations in file " << cl_argument[nargument] << endl;
       break;
     }
   case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
@@ -60,7 +60,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case INVALID_REFLECTOR_MAPPING:
     {
-      cerr << "Invalid reflector mapping" << endl; 
+      cerr << "Invalid " << class_type << " mapping in file " << cl_argument[nargument] << endl; 
       break;
     }
   case INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS:
@@ -73,7 +73,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case ERROR_OPENING_CONFIGURATION_FILE:
     {
-      cerr << "Error: Error opening configuration file" << endl;
+      cerr << "Error opening configuration file. Please check the command line parameters." << endl;
       break;
     }
   }
@@ -214,9 +214,7 @@ void check_command_line_input (int no_arguments, int noRotors, int &error_code)
 {
 /* Command line input */
   if (check_no_parameters(no_arguments, noRotors) != 0) 
-    error_code = check_no_parameters(no_arguments, noRotors);
-  else
-    error_code = 0;
+    error_code = check_no_parameters(no_arguments, noRotors);    
 }
 
 
