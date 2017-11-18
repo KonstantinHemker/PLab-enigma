@@ -37,7 +37,7 @@ int main(int argc, char** argv)
       if (error_code == 0)
 	{
 	  //Sets rotor starting position tokens and check their validity
-	  load_rotor_positions(argv[no_rotors+3], pos_token, error_code);
+	  load_rotor_positions(argv[no_rotors+3], pos_token, error_code, rotor);
 	  set_rotor_positions(0, pos_token, rotor, no_rotors, error_code, nargument);
 	}
       
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   check_enigma_setup(nargument, nrotor, argc, argv, no_rotors, error_code, class_type, plugboard, rotor, reflector, pos_token);
   if (error_code > 0)
     {
-      error_description(error_code, class_type, argv, nargument, nrotor, reflector, message);
+      error_description(error_code, no_rotors, class_type, argv, nargument, nrotor, reflector, message);
 
       return error_code;
     }
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
       check_message_input(message, error_code);
       if (error_code > 0)
 	{
-	  error_description(error_code, class_type, argv, nargument, nrotor, reflector, message);
+	  error_description(error_code, no_rotors, class_type, argv, nargument, nrotor, reflector, message);
 	  return error_code;
 	}
       

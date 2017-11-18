@@ -14,7 +14,7 @@ using namespace std;
 /*Helper functions*/
 
 /*Function to report errors*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message)  {
+void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
@@ -29,8 +29,10 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case NON_NUMERIC_CHARACTER:
     {
-      if ((class_type == "plugboard") || (class_type == "rotor positions"))
-      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
+      if (class_type == "plugboard")
+	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
+      if (class_type == "rotor positions")
+	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[noRotors+3] << endl;
     else if (class_type == "reflector")
       cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
     else
@@ -88,8 +90,8 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
   if (error_code > 0)
     return;
 
-  if (error_code > 0) //Checks whether there was an error opening the config file
-    return;
+  //if (error_code > 0) //Checks whether there was an error opening the config file
+      //   return;
 
   plugboard.check_config(argv[1], error_code);
   if (error_code > 0)
@@ -164,8 +166,11 @@ void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vec
 */
 
 /*Function that creates the position tokens for all rotors in the system*/
-void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code)  {
+void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code, Rotor* rotor)  {
   ifstream pos_input;
+  if (rotor[0].is_valid(cl_position, error_code) == false)
+    return;
+  
   pos_input.open (cl_position);
   if (pos_input.fail())
     {

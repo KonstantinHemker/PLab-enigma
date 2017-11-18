@@ -39,7 +39,7 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
 
 
 /*Function that carries the error descriptions*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
+void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
 
 /*Function that checks the message input*/
 //int check_message(char message);
@@ -47,7 +47,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
 //void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_token, Rotor rotor[]);
 
 /*Function that creates all rotor position tokens */
-void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code);
+void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code, Rotor* rotor);
 
 /*Function that sets the rotor positions across all rotors*/
 void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code, int &n);
@@ -150,18 +150,16 @@ class Rotor : public BaseModule
     for (unsigned int n=25; n <= token.size()-1; n++)
       notch[n-25] = token[n+1];
   }
-  int get_notch(int n) {
-    return notch[n]; }
+  int get_notch(int n)
+  {
+    return notch[n];
+  }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code, int &n) {
+  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code, int &n)
+  {
     if (pos_token.size() > 0)
       top_position = pos_token[c];
-    else
-      {
-	error_code = 8;
-	n = c;
-      }
   }
   void add_top_position(int n)
   {
