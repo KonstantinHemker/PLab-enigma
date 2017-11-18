@@ -14,13 +14,13 @@ using namespace std;
 /*Helper functions*/
 
 /*Function to report errors*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int n, Reflector &reflector)  {
+void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
-    cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?";
+    cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
     break;
   case INVALID_INPUT_CHARACTER:
-    cerr << "is not a valid input character (input characters must be upper case letters A-Z!)";
+    cerr << "is not a valid input character (input characters must be upper case letters A-Z!)" << endl;
     break;
   case INVALID_INDEX:
     {
@@ -30,11 +30,11 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
   case NON_NUMERIC_CHARACTER:
     {
       if ((class_type == "plugboard") || (class_type == "rotor positions"))
-      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
+      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
     else if (class_type == "reflector")
-      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[n] << endl;
+      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
     else
-      cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[n] << endl;
+      cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[nargument] << endl;
     break;
     }
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
@@ -44,18 +44,18 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
     }
   case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
     {
-      cerr << "Incorrect number of parameters in " << class_type << " file " << cl_argument [n] << endl;
+      cerr << "Incorrect number of parameters in " << class_type << " file " << cl_argument [nargument] << endl;
     break;
     }
   case INVALID_ROTOR_MAPPING:
     {
   //cerr << "Invalid mapping of input 13 to output 3 (output 3 is already mapped to from input 6)";
-      cerr << "Not all inputs mapped in " << class_type << " file: " << cl_argument [n] << endl;
+      cerr << "Not all inputs mapped in " << class_type << " file: " << cl_argument [nargument] << endl;
       break;
     }
   case NO_ROTOR_STARTING_POSITION:
     {
-      cerr << "No starting position for rotor 0 in " << class_type << " file: " << cl_argument[n] << endl;
+      cerr << "No starting position for rotor " << nrotor << " in " << class_type << " file: " << cl_argument[nargument] << endl;
      break;
     }
   case INVALID_REFLECTOR_MAPPING:
@@ -66,9 +66,9 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
   case INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS:
     {
       if (reflector.get_token_size() % 2 ==1)
-	cerr << "Incorrect (odd) number of parameters in " << class_type << " file " << cl_argument[n] << endl;
+	cerr << "Incorrect (odd) number of parameters in " << class_type << " file " << cl_argument[nargument] << endl;
       else
-	cerr << "Insufficient number of mappings in reflector file: " << cl_argument [n] << endl;
+	cerr << "Insufficient number of mappings in reflector file: " << cl_argument [nargument] << endl;
       break;
     }
   case ERROR_OPENING_CONFIGURATION_FILE:
@@ -82,7 +82,7 @@ void error_description (int code, string class_type, CharPtr cl_argument[], int 
 
 
 /*Function that checks all enigma setup errors */
-void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
+void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
 {
   check_command_line_input(cl_arguments, noRotors, error_code);
   if (error_code > 0)
@@ -95,7 +95,7 @@ void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, i
   if (error_code > 0)
     {
       class_type = "plugboard";
-      n = 1;
+      nargument = 1;
       return;
     }
 
@@ -105,7 +105,7 @@ void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, i
       if (error_code > 0)
 	{
 	  class_type = "rotor position";
-	  n = noRotors +3;
+	  nargument = noRotors +3;
 	  return;
 	}
 
@@ -115,7 +115,7 @@ void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, i
 	  if (error_code > 0)
 	  {
 	    class_type = "rotor";
-	    n = c + 3;
+	    nargument = c + 3;
 	    return;
 	  }
 	}
@@ -125,7 +125,7 @@ void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, i
   if (error_code > 0)
     {
       class_type = "reflector";
-      n = 2;
+      nargument = 2;
       return;
     }
 }
@@ -190,11 +190,11 @@ void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &erro
 }
 
 /*Recursive function that sets the rotor positions for each rotor*/
-void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors)  {
-  rotor[n].set_top_position(n, noRotors, pos_token);
-  n++;
-  if (n < noRotors)
-    set_rotor_positions(n, pos_token, rotor, noRotors);
+void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code, int &n)  {
+  rotor[c].set_top_position(c, noRotors, pos_token, error_code, n);
+  c++;
+  if (c < noRotors)
+    set_rotor_positions(c, pos_token, rotor, noRotors, error_code, n);
   else
     return;
 }
@@ -218,12 +218,6 @@ void check_command_line_input (int no_arguments, int noRotors, int &error_code)
   else
     error_code = 0;
 }
-
-
-
-
-
-//int check_engima_input ();
 
 
 /*Member functions*/

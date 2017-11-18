@@ -35,11 +35,11 @@ class Reflector;
 int check_no_parameters (int numberArguments, int noRotors);
 
 /*Function that checks the enigma setup*/
-void check_enigma_setup (int &n, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
+void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
 
 
 /*Function that carries the error descriptions*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int n, Reflector &reflector);
+void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector);
 
 /*Function that checks the message input*/
 int check_message(char message);
@@ -50,7 +50,7 @@ int check_message(char message);
 void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code);
 
 /*Function that sets the rotor positions across all rotors*/
-void set_rotor_positions(int n, vector<int> pos_token, Rotor* rotor, int noRotors);
+void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code, int &n);
 
 /*Function which checks the input by the program user*/
 void check_message_input (char message, int &error_code);
@@ -154,8 +154,14 @@ class Rotor : public BaseModule
     return notch[n]; }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  void set_top_position (int n, int noRotors, vector<int> pos_token) {
-    top_position = pos_token[n];
+  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code, int &n) {
+    if (pos_token.size() > 0)
+      top_position = pos_token[n];
+    else
+      {
+	error_code = 8;
+	n = c;
+      }
   }
   void add_top_position(int n)
   {
