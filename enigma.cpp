@@ -14,13 +14,13 @@ using namespace std;
 /*Helper functions*/
 
 /*Function to report errors*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector)  {
+void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
     break;
   case INVALID_INPUT_CHARACTER:
-    cerr << "is not a valid input character (input characters must be upper case letters A-Z!)" << endl;
+    cerr << message << " is not a valid input character (input characters must be upper case letters A-Z!)" << endl;
     break;
   case INVALID_INDEX:
     {
@@ -145,16 +145,6 @@ int check_no_parameters (int numberArguments, int noRotors)
 /*End of function definition*/
 
 
-
-/*Helper funtion that checks the message input*/
-int check_message(char message)  {
-    if (isupper(message) == 0)
-	return 2; //Code for invalid input character
-    else
-      return 0;
-}
-
-
 /*Function that initialises the array of rotors*/
 /*
 void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_token, Rotor rotor[])
@@ -202,9 +192,8 @@ void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotor
 
 void check_message_input (char message, int &error_code)
 {
-  /*Message input*/
-  if (check_message(message) != 0)
-    error_code = check_message(message);
+  if (isupper(message) == 0)
+    error_code = 2;
   else
     error_code = 0;
 }

@@ -39,10 +39,10 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
 
 
 /*Function that carries the error descriptions*/
-void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector);
+void error_description (int code, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
 
 /*Function that checks the message input*/
-int check_message(char message);
+//int check_message(char message);
 
 //void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_token, Rotor rotor[]);
 
