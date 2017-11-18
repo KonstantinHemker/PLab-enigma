@@ -1,0 +1,22 @@
+2
+2
+The starting position of the rotor 1 is 4
+The starting position of rotor 2 is 3
+WDMTSTOEASBEVE
+Plugboard - first six tokens configurations:
+24 25 0 0 0 0 
+First two rotor configurations for rotor 1:
+0
+9
+The first notch is at postition: 5
+The second notch is at position: 0
+After encrypting, the top position of rotor1 is 1
+
+First two rotor configurations for rotor 2:
+1
+3
+The first notch is at postition: 22
+The second notch is at position: 0
+After encrypting, the top position of rotor2 is 4
+
+The number of rotors is 2
