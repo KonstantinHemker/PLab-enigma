@@ -156,7 +156,7 @@ class Rotor : public BaseModule
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code, int &n) {
     if (pos_token.size() > 0)
-      top_position = pos_token[n];
+      top_position = pos_token[c];
     else
       {
 	error_code = 8;
