@@ -103,7 +103,7 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
       rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3]); 
       if (error_code > 0)
 	{
-	  class_type = "rotor position";
+	  class_type = "rotor positions";
 	  nargument = noRotors +3;
 	  return;
 	}
