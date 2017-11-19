@@ -93,20 +93,17 @@ void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRoto
   if (error_code > 0)
       return;
 
-  if (noRotors > 0)
+  if (noRotors > 0) //only checks for rotor conditions if rotors exist
     {
       rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3], nrotor); 
       if (error_code > 0)
-	{
 	 return;
-	}
 
-       for (int c = 0 ;c < noRotors; c++) 
+      for (int c = 0 ;c < noRotors; c++) 
 	{
 	  rotor[c].check_config(argv[c+3], error_code);
 	  if (error_code > 0)
 	    return;
-	  
 	}
     }
 
@@ -530,12 +527,14 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
       cerr << "Incorrect (odd) number of parameters in reflector file " << cl_input << endl;
       return;
     }
-  else
+  else if ((token.size() != 26) && (token.size() % 2 == 0))
     {
       error_code = 10;
       cerr << "Insufficient number of mappings in reflector file: " << cl_input << endl;
       return;
     }
+  else
+    return;
    
   //Check INVALID REFLECTOR MAPPING
   for (int c=0; c<=25;c++)  {
