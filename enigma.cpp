@@ -11,7 +11,7 @@
 
 
 /*Function that checks all enigma setup errors */
-void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
+void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_mapping)
 {
   check_command_line_input(cl_arguments, noRotors, error_code);
   if (error_code > 0)
@@ -24,7 +24,7 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
 
   if (noRotors > 0) //only checks for rotor conditions if rotors exist
     {
-      rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3]); 
+      rotor[0].check_rot_positions(noRotors, pos_mapping, error_code, argv[noRotors+3]); 
       if (error_code > 0)
 	 return;
 
@@ -42,7 +42,7 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
 
 /*Function that initialises the array of rotors*/
 /*
-void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_token, Rotor rotor[])
+void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_mapping, Rotor rotor[])
 {
   if (noRotors == 0)
     return;
@@ -51,15 +51,15 @@ void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vec
       for (int c = 0; c <= noRotors; c++)
 	rotor[c].init_rotor(cl_argument[c+3], error_code);
       
-      //Sets rotor starting position tokens and check their validity
-      load_rotor_positions(cl_argument[noRotors+3], pos_token, error_code);
-      set_rotor_positions(0, pos_token, rotor, noRotors);
+      //Sets rotor starting position mappings and check their validity
+      load_rotor_positions(cl_argument[noRotors+3], pos_mapping, error_code);
+      set_rotor_positions(0, pos_mapping, rotor, noRotors);
     }
 }
 */
 
-/*Function that creates the position tokens for all rotors in the system*/
-void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code, Rotor* rotor)  {
+/*Function that creates the position mappings for all rotors in the system*/
+void load_rotor_positions(CharPtr cl_position, vector<int> &pos_mapping, int &error_code, Rotor* rotor)  {
   ifstream pos_input;
   if (rotor[0].is_valid(cl_position, error_code) == false)
     return;
@@ -72,17 +72,17 @@ void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &erro
     }
   int n;
   while (pos_input >> n)  {
-    pos_token.push_back(n);
+    pos_mapping.push_back(n);
   }
   pos_input.close();
 }
 
 /*Recursive function that sets the rotor positions for each rotor*/
-void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code)  {
-  rotor[c].set_top_position(c, noRotors, pos_token, error_code);
+void set_rotor_positions(int c, vector<int> pos_mapping, Rotor* rotor, int noRotors, int &error_code)  {
+  rotor[c].set_top_position(c, noRotors, pos_mapping, error_code);
   c++;
   if (c < noRotors)
-    set_rotor_positions(c, pos_token, rotor, noRotors, error_code);
+    set_rotor_positions(c, pos_mapping, rotor, noRotors, error_code);
   else
     return;
 }
@@ -137,7 +137,7 @@ void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
    
 
 
-void BaseModule::load_tokens (CharPtr filename, int& error_code)
+void BaseModule::load_mappings (CharPtr filename, int& error_code)
 {
   ifstream enigmasettings;
   int n;
@@ -147,7 +147,7 @@ void BaseModule::load_tokens (CharPtr filename, int& error_code)
     }
   enigmasettings.open(filename);
   while (enigmasettings >> n) {
-    token.push_back(n);
+    mapping.push_back(n);
     }
   enigmasettings.close();
 }
@@ -181,17 +181,17 @@ void BaseModule::swap_values (char &current_char)  {
   if (empty == true) //Avoids seg fault if the file was empty
     return;
 
-  for (unsigned int i=0; i <= token.size(); i++)
+  for (unsigned int i=0; i <= mapping.size(); i++)
     {
-      if ((token[i]+65 == current_char) && (i%2 == 0)) //compares ASCII values
+      if ((mapping[i]+65 == current_char) && (i%2 == 0)) //compares ASCII values
      	{
-	  current_char = token[i+1]+65;
+	  current_char = mapping[i+1]+65;
 	  return;
 	}
 
-      if ((token[i]+65 == current_char) && (i%2 == 1))
+      if ((mapping[i]+65 == current_char) && (i%2 == 1))
 	{
-	  current_char = token[i-1]+65;
+	  current_char = mapping[i-1]+65;
 	  return;
      	}
 
@@ -200,8 +200,8 @@ void BaseModule::swap_values (char &current_char)  {
 
 
 bool BaseModule::invalid_index ()  {
-  for (unsigned int n=0; n <= token.size()-1  ; n++) {
-      if ((token[n] > 25) || (token[n] < 0))
+  for (unsigned int n=0; n <= mapping.size()-1  ; n++) {
+      if ((mapping[n] > 25) || (mapping[n] < 0))
 	return true; }  
   return false;
 }
@@ -220,17 +220,17 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
       return;
     }
   //Check for INCORRECT_NUMBER_OF_PB_PARAMETERS
-  if (token.size()%2 == 1)
+  if (mapping.size()%2 == 1)
     {
       error_code = INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
       cerr << "Incorrect number of parameters in plugboard file " << cl_input << endl;
       return;
     }
   //Check for IMPOSSIBLE_PLUGBOARD_CONFIGURATION
-  for (unsigned int i=0; i<=token.size()-1; i++)
+  for (unsigned int i=0; i<=mapping.size()-1; i++)
     {
-      for (unsigned int c=0; c<=token.size()-1; c++) {
-	if ((token[i] == token[c]) && (c != i)) {
+      for (unsigned int c=0; c<=mapping.size()-1; c++) {
+	if ((mapping[i] == mapping[c]) && (c != i)) {
 	  error_code = IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
 	  cerr << "Impossible plugboard configurations in file " << cl_input << endl;
 	  return;
@@ -294,7 +294,7 @@ void Rotor::swap_values(char &current_char) {
     {
       if (i == current_char - 65)
 	{
-	  current_char = token[i] + 65;
+	  current_char = mapping[i] + 65;
 	  break;
 	}
     } 
@@ -308,7 +308,7 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
 
   for (int i = 0; i<=25; i++)
     {
-      if ((token[i] == current_char-65))
+      if ((mapping[i] == current_char-65))
 	{
 	  current_char = i + 65;
 	  break;
@@ -359,8 +359,8 @@ void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
 }
 
 
-void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument) {
-  int vsize = pos_token.size();
+void Rotor::check_rot_positions(int noRotors, vector<int> pos_mapping, int &error_code, CharPtr cl_argument) {
+  int vsize = pos_mapping.size();
 
   //Check NON NUMERIC CHARACTER
   check_numeric_char(cl_argument, error_code);
@@ -371,7 +371,7 @@ void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_
     }
   //Check for INVALID INDEX
   for (int i=0; i<vsize; i++) {
-    if (pos_token[i] > 25 || pos_token[i] < 0)
+    if (pos_mapping[i] > 25 || pos_mapping[i] < 0)
       {
 	cerr << "Invalid index in rotor position file " << cl_argument << endl;
 	error_code = INVALID_INDEX;  //INVALID INDEX code
@@ -385,7 +385,7 @@ void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_
   else
     {
       error_code = NO_ROTOR_STARTING_POSITION;
-      cerr << "No starting position for rotor 0 in rotor position file " << cl_argument << endl;
+      cerr << "No starting position for rotor 0 in rotor position file: " << cl_argument << endl;
     }
 }
 
@@ -399,7 +399,7 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
     }
   
   //Check INVALID ROTOR MAPPING (too few inputs)
-  if (token.size()<=26)
+  if (mapping.size()<=26)
     {
       error_code = INVALID_ROTOR_MAPPING;
       cerr << "Not all inputs mapped in rotor file: " << cl_input << endl;
@@ -412,11 +412,11 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
     {
       for (int i=0; i<=25; i++)
 	{
-	  if ((token[i] == token[c]) && (c!=i))
+	  if ((mapping[i] == mapping[c]) && (c!=i))
 	    {
 	      error_code = INVALID_ROTOR_MAPPING;
-	      cerr << "Invalid mapping of input " << i << " to output " << token[i];
-	      cerr << " (output " << token[i] << " is already mapped to from input " << c << ")" << endl;
+	      cerr << "Invalid mapping of input " << i << " to output " << mapping[i];
+	      cerr << " (output " << mapping[i] << " is already mapped to from input " << c << ")" << endl;
 	      return;
 	    }
 	}
@@ -440,13 +440,13 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
       return;
     }
   //Check INCORRECT NUMBER OF REFLECTOR PARAMETERS
-  if ((token.size() != 26) && (token.size() % 2 == 1))
+  if ((mapping.size() != 26) && (mapping.size() % 2 == 1))
     {
       error_code = INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
       cerr << "Incorrect (odd) number of parameters in reflector file " << cl_input << endl;
       return;
     }
-  else if ((token.size() != 26) && (token.size() % 2 == 0))
+  else if ((mapping.size() != 26) && (mapping.size() % 2 == 0))
     {
       error_code = INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
       cerr << "Insufficient number of mappings in reflector file: " << cl_input << endl;
@@ -458,7 +458,7 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
   //Check INVALID REFLECTOR MAPPING
   for (int c=0; c<=25;c++)  {
     for (int i=0; i<=25; i++) {
-      if ((token[i] == token[c]) && (c!=i))
+      if ((mapping[i] == mapping[c]) && (c!=i))
 	{
 	  error_code = INVALID_REFLECTOR_MAPPING;
 	  cerr << "Invalid reflector mapping in file " << cl_input << endl;
@@ -467,7 +467,6 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
     }
     
   }
-  
    
   //Check for INVALID INDEX
   if (invalid_index() == true)

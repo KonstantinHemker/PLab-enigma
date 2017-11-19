@@ -33,7 +33,7 @@ class Reflector;
 
 
 /*Function that checks the enigma setup*/
-void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
+void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_mapping);
 
 
 /*Function that carries the error descriptions*/
@@ -41,13 +41,13 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
 void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
 
 
-//void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_token, Rotor rotor[]);
+//void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_mapping, Rotor rotor[]);
 
-/*Function that creates all rotor position tokens */
-void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code, Rotor* rotor);
+/*Function that creates all rotor position mappings */
+void load_rotor_positions(CharPtr cl_position, vector<int> &pos_mapping, int &error_code, Rotor* rotor);
 
 /*Function that sets the rotor positions across all rotors*/
-void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code);
+void set_rotor_positions(int c, vector<int> pos_mapping, Rotor* rotor, int noRotors, int &error_code);
 
 /*Function which checks the input by the program user*/
 void check_message_input (char message, int &error_code);
@@ -61,30 +61,30 @@ void check_command_line_input(int no_arguments, int noRotors, int &error_code);
 class BaseModule  {
  protected:
   string settings;
-  vector<int> token;
+  vector<int> mapping;
   char letter;
   bool empty;
  public:
   void check_numeric_char (CharPtr filename, int &error_code);
-  void load_tokens (CharPtr filename, int &error_code);
-  int get_token (int n)  {
-    return token[n]; }
-  int get_token_size() {
-    return token.size(); }   
+  void load_mappings (CharPtr filename, int &error_code);
+  int get_mapping (int n)  {
+    return mapping[n]; }
+  int get_mapping_size() {
+    return mapping.size(); }   
   void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
   bool is_valid(CharPtr filename, int &error_code);
   //virtual void check_config(CharPtr cl_input, int &error_code);         
 };
 
-
+/*Class definition of plugboard as a child class of BaseModule*/
 class Plugboard : public BaseModule {
  private:
    char letter;
  public:
    Plugboard (CharPtr cl_argument, int &error_code)
      {
-       load_tokens (cl_argument, error_code);
+       load_mappings (cl_argument, error_code);
      }
    void pass_through(char &message)
    {
@@ -103,7 +103,7 @@ class Plugboard : public BaseModule {
 
 
 
-
+/*Class definition of reflector as a child class of BaseModule*/
 class Reflector: public BaseModule
 {
  private:
@@ -111,7 +111,7 @@ class Reflector: public BaseModule
  public:
   Reflector(CharPtr cl_arguments, int &error_code)
     {
-      load_tokens(cl_arguments, error_code);
+      load_mappings(cl_arguments, error_code);
     }
   void pass_through(char &message, int n)
   {
@@ -124,8 +124,12 @@ class Reflector: public BaseModule
   }
   void check_config(CharPtr cl_input, int &error_code);    
 };
+/*End of class definition*/
 
 
+/*Class definition for the rotors.*/
+//Note that this class deliberately has no constructor, because we create an array of rotors, which gives the
+//enigma more flexibility.
 class Rotor : public BaseModule
 {
  private:
@@ -136,15 +140,15 @@ class Rotor : public BaseModule
  public:
    void init_rotor(CharPtr cl_argument, int &error_code)
     {
-      load_tokens(cl_argument, error_code);
+      load_mappings(cl_argument, error_code);
       if (error_code > 0)
 	return;
       set_notch();
     }    
   void set_notch ()
   {
-    for (unsigned int n=25; n <= token.size()-1; n++)
-      notch[n-25] = token[n+1];
+    for (unsigned int n=25; n <= mapping.size()-1; n++)
+      notch[n-25] = mapping[n+1];
   }
   int get_notch(int n)
   {
@@ -152,10 +156,10 @@ class Rotor : public BaseModule
   }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code)
+  void set_top_position (int c, int noRotors, vector<int> pos_mapping, int &error_code)
   {
-    if (pos_token.size() > 0)
-      top_position = pos_token[c];
+    if (pos_mapping.size() > 0)
+      top_position = pos_mapping[c];
   }
   void add_top_position(int n)
   {
@@ -167,13 +171,10 @@ class Rotor : public BaseModule
   }
   void swap_values(char &current_char);
   void check_config(CharPtr cl_input, int &error_code);
-  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument);
+  void check_rot_positions(int noRotors, vector<int> pos_mapping, int &error_code, CharPtr cl_argument);
   void rotate_up(int i, Rotor* rotor, int noRotors);
   void adjust_up (char &current_char);
   void adjust_down (char &current_char);
 };
-
-
-
 
 #endif

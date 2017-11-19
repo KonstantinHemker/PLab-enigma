@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-  vector<int> pos_token;
+  vector<int> pos_mapping;
   char message; 
   int no_rotors;
   int error_code=0;
@@ -27,15 +27,15 @@ int main(int argc, char** argv)
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
-      //initialize_rotors(no_rotors, argv, error_code, pos_token, rotor);
+      //initialize_rotors(no_rotors, argv, error_code, pos_mapping, rotor);
       
       for (int c = 0; c < no_rotors; c++)
 	rotor[c].init_rotor(argv[c+3], error_code);
       if (error_code == 0)
 	{
-	  //Sets rotor starting position tokens and check their validity
-	  load_rotor_positions(argv[no_rotors+3], pos_token, error_code, rotor);
-	  set_rotor_positions(0, pos_token, rotor, no_rotors, error_code);
+	  //Sets rotor starting position mappings and check their validity
+	  load_rotor_positions(argv[no_rotors+3], pos_mapping, error_code, rotor);
+	  set_rotor_positions(0, pos_mapping, rotor, no_rotors, error_code);
 	}
       
     }
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
   
 
-  check_enigma_setup(argc, argv, no_rotors, error_code, plugboard, rotor, reflector, pos_token);
+  check_enigma_setup(argc, argv, no_rotors, error_code, plugboard, rotor, reflector, pos_mapping);
   if (error_code > 0)
       return error_code;
   
