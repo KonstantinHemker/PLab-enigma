@@ -50,8 +50,7 @@ void error_description (int code, int noRotors, string class_type, CharPtr cl_ar
     }
   case INVALID_ROTOR_MAPPING:
     {
-  //cerr << "Invalid mapping of input 13 to output 3 (output 3 is already mapped to from input 6)";
-      cerr << "Not all inputs mapped in " << class_type << " file: " << cl_argument [nargument] << endl;
+      cerr  << endl; //Error message already output it check_config function
       break;
     }
   case NO_ROTOR_STARTING_POSITION:
@@ -492,6 +491,16 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
       if ((token[i] == token[c]) && (c!=i))
 	{
 	  error_code = 7;
+	  cerr <<  "Invalid mapping of input " << token[i] << " to output ";
+	  if (i%2 == 1)
+	    cerr << token [i-1] << " output " << token[i-1];
+	  else
+	    cerr << token[i+1] << " (output " << token[i+1];
+	  cerr << " is already mapped to from input ";
+	  if (c%2 == 1)
+	    cerr << token[c-1] << ")";
+	  else
+	    cerr << token[c+1] << ")";
 	  return;
 	}
     }
