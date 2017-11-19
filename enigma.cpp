@@ -30,8 +30,8 @@ void error_description (int code, int noRotors, string class_type, CharPtr cl_ar
     {
       if (class_type == "plugboard")
 	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
-      else if (class_type == "rotor positions")
-	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[noRotors+3] << endl;
+      else if (class_type == "rotor position")
+	cerr << "Non-numeric character in rotor positions file " << cl_argument[noRotors+3] << endl;
       else if (class_type == "reflector")
 	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
       else
@@ -103,7 +103,7 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
       rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3]); 
       if (error_code > 0)
 	{
-	  class_type = "rotor positions";
+	  class_type = "rotor position";
 	  nargument = noRotors +3;
 	  return;
 	}
