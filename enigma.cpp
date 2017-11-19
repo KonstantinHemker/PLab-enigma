@@ -9,18 +9,17 @@
 
 #include "enigma.h"
 
-using namespace std;
-
 /*Helper functions*/
 
 /*Function to report errors*/
+
 void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message)  {
   switch(code) {
   case INSUFFICIENT_NUMBER_OF_PARAMETERS:
     cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
     break;
   case INVALID_INPUT_CHARACTER:
-    cerr << message << " is not a valid input character (input characters must be upper case letters A-Z!)" << endl;
+    cerr << message << " is not a valid input character (input characters must be upper case letters A-Z)!" << endl;
     break;
   case INVALID_INDEX:
     {
@@ -31,13 +30,13 @@ void error_description (int code, int noRotors, string class_type, CharPtr cl_ar
     {
       if (class_type == "plugboard")
 	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
-      if (class_type == "rotor positions")
+      else if (class_type == "rotor positions")
 	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[noRotors+3] << endl;
-    else if (class_type == "reflector")
-      cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
-    else
-      cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[nargument] << endl;
-    break;
+      else if (class_type == "reflector")
+	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
+      else
+	cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[nargument] << endl;
+      break;
     }
   case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
     {
@@ -90,9 +89,7 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
   if (error_code > 0)
     return;
 
-  //if (error_code > 0) //Checks whether there was an error opening the config file
-      //   return;
-
+ 
   plugboard.check_config(argv[1], error_code);
   if (error_code > 0)
     {
@@ -131,7 +128,6 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
       return;
     }
 }
-  
   
 
 /*Helper function to check the number of parameters entered in the command line*/
@@ -341,6 +337,7 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
 }
 
 
+
 void Rotor::adjust_up(char& current_char)
 {
   if (current_char + top_position > 90) 
@@ -366,8 +363,9 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
 
   adjust_up(current_char);
 
-  //Swap the values according to token mapping
-  swap_values(current_char); //shifts up twice
+  swap_values(current_char); 
+
+  adjust_down(current_char);
   
     a--;
     if (a >= 0)
@@ -379,25 +377,15 @@ void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a
  
 
 void Rotor::swap_values(char &current_char) {
-  int i = 0;
   letter = current_char -65;
-  while (i<=25)
+  for(int i = 0; i <= 25; i++)
     {
-      if (i == current_char - 65) {
-	
-	current_char = token[i] + 65;
-	break;
-      }
-      i++;
-    }      
-  if (token[i] - top_position < 0) {
-    current_char = token[i] - top_position + 26 + 65;
-    return;
-  }
-  else {
-    current_char = token[i] - top_position + 65;
-    return;
-  } 
+      if (i == current_char - 65)
+	{
+	  current_char = token[i] + 65;
+	  break;
+	}
+    } 
 }
 
 
@@ -516,8 +504,8 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
 }
 
 
-void Reflector::check_config(CharPtr cl_input, int &error_code)  {
-
+void Reflector::check_config(CharPtr cl_input, int &error_code)
+{
   //Check NON NUMERIC CHARACTER
   check_numeric_char(cl_input, error_code);
   if (error_code != 0)
@@ -549,3 +537,4 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)  {
       return;
     }
 }
+

@@ -1,4 +1,4 @@
-enigma: enigma.o main.o
+enigma: enigma.o main.o 
 	g++ -g enigma.o main.o -o enigma
 
 enigma.o: enigma.cpp enigma.h

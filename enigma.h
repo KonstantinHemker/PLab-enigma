@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 
 /* error codes  */
@@ -26,7 +27,6 @@ typedef char* CharPtr;
 
 using namespace std;
 
-class InputSwitch;
 class Plugboard;
 class Rotor;
 class Reflector;
@@ -39,10 +39,9 @@ void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* ar
 
 
 /*Function that carries the error descriptions*/
+
 void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
 
-/*Function that checks the message input*/
-//int check_message(char message);
 
 //void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_token, Rotor rotor[]);
 
@@ -77,7 +76,7 @@ class BaseModule  {
   void swap_values (char &current_char); //represents the wiring
   bool invalid_index ();
   bool is_valid(CharPtr filename, int &error_code);
-          
+  //virtual void check_config(CharPtr cl_input, int &error_code);         
 };
 
 
@@ -106,6 +105,7 @@ class Plugboard : public BaseModule {
 
 
 
+
 class Reflector: public BaseModule
 {
  private:
@@ -124,9 +124,7 @@ class Reflector: public BaseModule
   {
     return letter;
   }
-  void check_config(CharPtr cl_input, int &error_code);
- 
-      
+  void check_config(CharPtr cl_input, int &error_code);    
 };
 
 
