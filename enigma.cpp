@@ -428,7 +428,6 @@ void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
       else
 	top_position_meets_notch = false;
 
-      //Further checks
       if ((top_position_meets_notch == false) && (rotor[i].get_top_position() == 25))
 	rotor[i].add_top_position(-25);
 	  
@@ -485,22 +484,23 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
   if (error_code != 0)
     return;
   
-  //Check INVALID_ROTOR_MAPPING
+  //Check INVALID ROTOR MAPPING (too few inputs)
+  if (token.size()<=26)
+    {
+      error_code = 7;
+      cerr << "Not all inputs mapped in rotor file : " << cl_input;
+      return;
+    }
+  
+
+  //Check INVALID_ROTOR_MAPPING (double mapping)
   for (int c=0; c<=25;c++)  {
     for (int i=0; i<=25; i++) {
       if ((token[i] == token[c]) && (c!=i))
 	{
 	  error_code = 7;
-	  cerr <<  "Invalid mapping of input " << token[i] << " to output ";
-	  if (i%2 == 1)
-	    cerr << token [i-1] << " output " << token[i-1];
-	  else
-	    cerr << token[i+1] << " (output " << token[i+1];
-	  cerr << " is already mapped to from input ";
-	  if (c%2 == 1)
-	    cerr << token[c-1] << ")";
-	  else
-	    cerr << token[c+1] << ")";
+	  cerr << "Invalid mapping of input " << i << " to output " << token[i];
+	  cerr << " (output " << token[i] << " is already mapped to from input " << c << ")";
 	  return;
 	}
     }
