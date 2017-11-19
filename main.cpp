@@ -13,7 +13,6 @@ int main(int argc, char** argv)
   char message; 
   int no_rotors;
   int error_code=0;
-  int nrotor;
  
   if (argc < 5)
     no_rotors = 0;
@@ -47,16 +46,11 @@ int main(int argc, char** argv)
 
   
 
-  check_enigma_setup(nrotor, argc, argv, no_rotors, error_code, plugboard, rotor, reflector, pos_token);
+  check_enigma_setup(argc, argv, no_rotors, error_code, plugboard, rotor, reflector, pos_token);
   if (error_code > 0)
-    {
-      //error_description(error_code, no_rotors, class_type, argv, nargument, nrotor, reflector, message);
-
       return error_code;
-    }
-
   
-   cin >> std::ws >> message;
+  cin >> std::ws >> message;
 
   while (!cin.eof()) 
     {

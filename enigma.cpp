@@ -9,80 +9,9 @@
 
 #include "enigma.h"
 
-/*Helper functions*/
-
-/*Function to report errors*/
-/*
-void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message)  {
-  switch(code) {
-  case INSUFFICIENT_NUMBER_OF_PARAMETERS:
-    cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
-    break;
-  case INVALID_INPUT_CHARACTER:
-    cerr << message << " is not a valid input character (input characters must be upper case letters A-Z)!" << endl;
-    break;
-  case INVALID_INDEX:
-    {
-      cerr << "Invalid index in " << class_type << " file " << cl_argument[nargument] << endl;
-      break;
-    }
-  case NON_NUMERIC_CHARACTER:
-    {
-      if (class_type == "plugboard")
-	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
-      else if (class_type == "rotor position")
-	cerr << "Non-numeric character in rotor positions file " << cl_argument[noRotors+3] << endl;
-      else if (class_type == "reflector")
-	cerr << "Non-numeric character in " << class_type << " file " << cl_argument[nargument] << endl;
-      else
-	cerr << "Non-numeric character for mapping in " << class_type << " file " << cl_argument[nargument] << endl;
-      break;
-    }
-  case IMPOSSIBLE_PLUGBOARD_CONFIGURATION:
-    {
-      cerr << "Impossible " << class_type << " configurations in file " << cl_argument[nargument] << endl;
-      break;
-    }
-  case INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS:
-    {
-      cerr << "Incorrect number of parameters in " << class_type << " file " << cl_argument [nargument] << endl;
-    break;
-    }
-  case INVALID_ROTOR_MAPPING:
-    {
-      cerr  << endl; //Error message already output it check_config function
-      break;
-    }
-  case NO_ROTOR_STARTING_POSITION:
-    {
-      cerr << "No starting position for rotor " << nrotor << " in " << class_type << " file: " << cl_argument[nargument] << endl;
-     break;
-    }
-  case INVALID_REFLECTOR_MAPPING:
-    {
-      cerr << "Invalid " << class_type << " mapping in file " << cl_argument[nargument] << endl; 
-      break;
-    }
-  case INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS:
-    {
-      if (reflector.get_token_size() % 2 ==1)
-	cerr << "Incorrect (odd) number of parameters in " << class_type << " file " << cl_argument[nargument] << endl;
-      else
-	cerr << "Insufficient number of mappings in reflector file: " << cl_argument [nargument] << endl;
-      break;
-    }
-  case ERROR_OPENING_CONFIGURATION_FILE:
-    {
-      cerr << "Error opening configuration file. Please check the command line parameters." << endl;
-      break;
-    }
-  }
-}
-*/
-
 
 /*Function that checks all enigma setup errors */
-void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
+void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token)
 {
   check_command_line_input(cl_arguments, noRotors, error_code);
   if (error_code > 0)
@@ -95,7 +24,7 @@ void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRoto
 
   if (noRotors > 0) //only checks for rotor conditions if rotors exist
     {
-      rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3], nrotor); 
+      rotor[0].check_rot_positions(noRotors, pos_token, error_code, argv[noRotors+3]); 
       if (error_code > 0)
 	 return;
 
@@ -108,11 +37,8 @@ void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRoto
     }
 
   reflector.check_config(argv[2], error_code);
-    
 }
   
-
-
 
 /*Function that initialises the array of rotors*/
 /*
@@ -141,9 +67,8 @@ void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &erro
   pos_input.open (cl_position);
   if (pos_input.fail())
     {
-      error_code = 11;
-      cerr << "Error opening configuration file." << endl;
-      return;
+      error_code = ERROR_OPENING_CONFIGURATION_FILE;
+        return;
     }
   int n;
   while (pos_input >> n)  {
@@ -177,11 +102,17 @@ void check_message_input (char message, int &error_code)
 
 void check_command_line_input (int no_arguments, int noRotors, int &error_code)
 {
-/* Command line input */
   if (((noRotors == 0) && (no_arguments < 3)) || ((noRotors > 0) && (no_arguments < 5)))
     {
-      error_code = 1;
+      error_code = INSUFFICIENT_NUMBER_OF_PARAMETERS;
       cerr << "usage: enigma plugboard-file reflector-file (<rotor-file>* rotor-positions)?" << endl;
+      return;
+    }
+
+    if (error_code == 11)
+    {
+      cerr << "Error opening configuration file." << endl;
+      return;
     }
 }
 
@@ -200,7 +131,7 @@ void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
       if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\n'))
 	{}
       else
-	error_code = 4;
+	error_code = NON_NUMERIC_CHARACTER;
     }
 }
    
@@ -228,8 +159,7 @@ bool BaseModule::is_valid (CharPtr filename, int &error_code)
   inStream.open(filename);
   if (inStream.fail())
     {
-      error_code = 11;
-      cerr << "Error opening configuration file." << endl; 
+      error_code = ERROR_OPENING_CONFIGURATION_FILE; 
       return false;
     }
   inStream.seekg(0, inStream.end);
@@ -246,8 +176,6 @@ bool BaseModule::is_valid (CharPtr filename, int &error_code)
   return true;
 }
   
-
-
 void BaseModule::swap_values (char &current_char)  {
 
   if (empty == true) //Avoids seg fault if the file was empty
@@ -294,7 +222,7 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
   //Check for INCORRECT_NUMBER_OF_PB_PARAMETERS
   if (token.size()%2 == 1)
     {
-      error_code = 6;
+      error_code = INCORRECT_NUMBER_OF_PLUGBOARD_PARAMETERS;
       cerr << "Incorrect number of parameters in plugboard file " << cl_input << endl;
       return;
     }
@@ -303,7 +231,7 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
     {
       for (unsigned int c=0; c<=token.size()-1; c++) {
 	if ((token[i] == token[c]) && (c != i)) {
-	  error_code = 5;
+	  error_code = IMPOSSIBLE_PLUGBOARD_CONFIGURATION;
 	  cerr << "Impossible plugboard configurations in file " << cl_input << endl;
 	  return;
 	}
@@ -313,7 +241,7 @@ void Plugboard::check_config(CharPtr cl_input, int &error_code)   {
   //Check for INVALID INDEX
   if (invalid_index() == true)
     {
-      error_code = 3;
+      error_code = INVALID_INDEX;
       cerr << "Invalid index in plugboard file " << cl_input << endl;
       return;
     }
@@ -371,9 +299,7 @@ void Rotor::swap_values(char &current_char) {
 	}
     } 
 }
-
-
-  
+ 
 void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
@@ -396,8 +322,6 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
     rotor[a].rotor_outwards(current_char, rotor, noRotors, a);
   
 }
-
-
   
 void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
 
@@ -435,9 +359,7 @@ void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
 }
 
 
-
-
-void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument, int nrotor) {
+void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument) {
   int vsize = pos_token.size();
 
   //Check NON NUMERIC CHARACTER
@@ -452,7 +374,7 @@ void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_
     if (pos_token[i] > 25 || pos_token[i] < 0)
       {
 	cerr << "Invalid index in rotor position file " << cl_argument << endl;
-	error_code = 3;  //INVALID INDEX code
+	error_code = INVALID_INDEX;  //INVALID INDEX code
 	return;
       }
   }
@@ -462,27 +384,25 @@ void Rotor::check_rot_positions(int noRotors, vector<int> pos_token, int &error_
     return;
   else
     {
-      error_code = 8;
-      cerr << "No starting position for rotor " << nrotor << " in rotor position file " << cl_argument << endl;
+      error_code = NO_ROTOR_STARTING_POSITION;
+      cerr << "No starting position for rotor 0 in rotor position file " << cl_argument << endl;
     }
 }
-
-
 
 void Rotor::check_config (CharPtr cl_input, int &error_code) {
   //Check NON_NUMERIC_CHARACTER
   check_numeric_char(cl_input, error_code);
   if (error_code != 0)
     {
-      cerr << "Non-numeric character in rotor file " << cl_input << endl;
+      cerr << "Non-numeric character for mapping in rotor file " << cl_input << endl;
       return;
     }
   
   //Check INVALID ROTOR MAPPING (too few inputs)
   if (token.size()<=26)
     {
-      error_code = 7;
-      cerr << "Not all inputs mapped in rotor file: " << cl_input;
+      error_code = INVALID_ROTOR_MAPPING;
+      cerr << "Not all inputs mapped in rotor file: " << cl_input << endl;
       return;
     }
   
@@ -494,9 +414,9 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
 	{
 	  if ((token[i] == token[c]) && (c!=i))
 	    {
-	      error_code = 7;
+	      error_code = INVALID_ROTOR_MAPPING;
 	      cerr << "Invalid mapping of input " << i << " to output " << token[i];
-	      cerr << " (output " << token[i] << " is already mapped to from input " << c << ")";
+	      cerr << " (output " << token[i] << " is already mapped to from input " << c << ")" << endl;
 	      return;
 	    }
 	}
@@ -506,10 +426,9 @@ void Rotor::check_config (CharPtr cl_input, int &error_code) {
   if (invalid_index() == true)
     {
       cerr << "Invalid index in rotor file " << cl_input << endl;
-      error_code = 3;
+      error_code = INVALID_INDEX;
     }
 }
-
 
 void Reflector::check_config(CharPtr cl_input, int &error_code)
 {
@@ -523,13 +442,13 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
   //Check INCORRECT NUMBER OF REFLECTOR PARAMETERS
   if ((token.size() != 26) && (token.size() % 2 == 1))
     {
-      error_code = 10;
+      error_code = INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
       cerr << "Incorrect (odd) number of parameters in reflector file " << cl_input << endl;
       return;
     }
   else if ((token.size() != 26) && (token.size() % 2 == 0))
     {
-      error_code = 10;
+      error_code = INCORRECT_NUMBER_OF_REFLECTOR_PARAMETERS;
       cerr << "Insufficient number of mappings in reflector file: " << cl_input << endl;
       return;
     }
@@ -541,7 +460,7 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
     for (int i=0; i<=25; i++) {
       if ((token[i] == token[c]) && (c!=i))
 	{
-	  error_code = 9;
+	  error_code = INVALID_REFLECTOR_MAPPING;
 	  cerr << "Invalid reflector mapping in file " << cl_input << endl;
 	  return;
 	}
@@ -553,9 +472,8 @@ void Reflector::check_config(CharPtr cl_input, int &error_code)
   //Check for INVALID INDEX
   if (invalid_index() == true)
     {
-      error_code = 3;
+      error_code = INVALID_INDEX;
       cerr << "Invalid index in reflector file " << cl_input << endl;
       return;
     }
 }
-

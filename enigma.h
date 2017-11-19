@@ -33,7 +33,7 @@ class Reflector;
 
 
 /*Function that checks the enigma setup*/
-void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
+void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
 
 
 /*Function that carries the error descriptions*/
@@ -167,7 +167,7 @@ class Rotor : public BaseModule
   }
   void swap_values(char &current_char);
   void check_config(CharPtr cl_input, int &error_code);
-  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument, int nrotor);
+  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument);
   void rotate_up(int i, Rotor* rotor, int noRotors);
   void adjust_up (char &current_char);
   void adjust_down (char &current_char);
