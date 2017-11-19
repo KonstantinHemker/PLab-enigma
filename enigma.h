@@ -31,11 +31,9 @@ class Plugboard;
 class Rotor;
 class Reflector;
 
-/*Helper function declarations */
-int check_no_parameters (int numberArguments, int noRotors);
 
 /*Function that checks the enigma setup*/
-void check_enigma_setup (int &nargument, int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, string &class_type, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
+void check_enigma_setup (int &nrotor, int cl_arguments, char* argv[], int noRotors, int &error_code, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> pos_token);
 
 
 /*Function that carries the error descriptions*/
@@ -49,7 +47,7 @@ void error_description (int code, int noRotors, string class_type, CharPtr cl_ar
 void load_rotor_positions(CharPtr cl_position, vector<int> &pos_token, int &error_code, Rotor* rotor);
 
 /*Function that sets the rotor positions across all rotors*/
-void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code, int &n);
+void set_rotor_positions(int c, vector<int> pos_token, Rotor* rotor, int noRotors, int &error_code);
 
 /*Function which checks the input by the program user*/
 void check_message_input (char message, int &error_code);
@@ -154,7 +152,7 @@ class Rotor : public BaseModule
   }
   void rotor_inwards(char &current_char, Rotor* rotor, int noRotors, int a);
   void rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a);
-  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code, int &n)
+  void set_top_position (int c, int noRotors, vector<int> pos_token, int &error_code)
   {
     if (pos_token.size() > 0)
       top_position = pos_token[c];
@@ -169,7 +167,7 @@ class Rotor : public BaseModule
   }
   void swap_values(char &current_char);
   void check_config(CharPtr cl_input, int &error_code);
-  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument);
+  void check_rot_positions(int noRotors, vector<int> pos_token, int &error_code, CharPtr cl_argument, int nrotor);
   void rotate_up(int i, Rotor* rotor, int noRotors);
   void adjust_up (char &current_char);
   void adjust_down (char &current_char);
