@@ -112,6 +112,22 @@ void check_command_line_input (int no_arguments, int noRotors, int &errorCode)
 // MEMBER FUNCTIONS OF ABSTRACT CLASS "BASEMODULE"    //
 ///////////////////////////////////////////////////////
 
+
+/*Function that loads the mapping*/
+void BaseModule::load_mappings (CharPtr filename, int& errorCode)  {
+  if (is_valid(filename, errorCode) == false) {
+    return;	      
+  }
+  ifstream enigmasettings;
+  int n;
+  enigmasettings.open(filename);
+  while (enigmasettings >> n) {
+    mapping.push_back(n);
+    }
+  enigmasettings.close();
+}
+
+
 /*Function that checks whether an input file contains a non-numeric character*/
 void BaseModule::check_numeric_char(CharPtr filename, int &errorCode)  {
   ifstream enigmasettings;
@@ -131,21 +147,7 @@ void BaseModule::check_numeric_char(CharPtr filename, int &errorCode)  {
 }
    
 
-/*Function that loads the mapping*/
-void BaseModule::load_mappings (CharPtr filename, int& errorCode)  {
-  if (is_valid(filename, errorCode) == false) {
-    return;	      
-  }
-  ifstream enigmasettings;
-  int n;
-  enigmasettings.open(filename);
-  while (enigmasettings >> n) {
-    mapping.push_back(n);
-    }
-  enigmasettings.close();
-}
-
-
+/*Function that checks for further validity of the input file stream*/
 bool BaseModule::is_valid (CharPtr filename, int &errorCode)   {
   ifstream inStream;
   inStream.open(filename);
@@ -165,7 +167,8 @@ bool BaseModule::is_valid (CharPtr filename, int &errorCode)   {
 
   return true;
 }
-  
+
+/*Function that changes the value of the current character to its mapped character*/
 void BaseModule::swap_values (char &current_char)  {
 
   if (empty == true) //Avoids seg fault if the file was empty
@@ -181,7 +184,7 @@ void BaseModule::swap_values (char &current_char)  {
     }
 }
 
-
+/*Function that checks for an invalid index number in configuration file*/
 bool BaseModule::invalid_index ()  {
   for (unsigned int n=0; n <= mapping.size()-1  ; n++) {
       if ((mapping[n] > 25) || (mapping[n] < 0))
@@ -201,12 +204,6 @@ Plugboard::Plugboard(CharPtr clArgument, int &errorCode) {
   load_mappings (clArgument, errorCode);
 }
 
-
-/*Passes values through the plugboard
-void Plugboard::pass_through(char &message)  {
-  swap_values(message);
-}
-*/
 
 
 /*Function that checks all possible error conditions for the plugboard*/
@@ -349,7 +346,7 @@ void Rotor::mapping_outwards(char &current_char, Rotor* rotor, int noRotors, int
 
 
 
-/*Function that checks the configurations of the rotor itself*/
+/*Function that checks the configurations of the .rot input file*/
 void Rotor::check_config (CharPtr clInput, int &errorCode) {
   //Check NON_NUMERIC_CHARACTER
   check_numeric_char(clInput, errorCode);
@@ -387,7 +384,7 @@ void Rotor::check_config (CharPtr clInput, int &errorCode) {
 
 
 
-/*Function that checks the configurations of the rotor positions*/
+/*Function that checks the positions of the .pos input file*/
 void Rotor::check_rot_positions(int noRotors, vector<int> posMapping, int &errorCode, CharPtr clArgument) {
 
   int vsize = posMapping.size();
@@ -462,12 +459,7 @@ Reflector::Reflector (CharPtr clArguments, int &errorCode)  {
   load_mappings(clArguments, errorCode);
 }
 
-/*Function that processes the letter for the reflector
-void Reflector::pass_through(char &message, int n)  {
-  swap_values(message);
-}
-*/
-
+/*Function that that checks the configurations in the .rf file*/
 void Reflector::check_config(CharPtr clInput, int &errorCode)  {
   //Check NON NUMERIC CHARACTER
   check_numeric_char(clInput, errorCode);

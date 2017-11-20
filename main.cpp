@@ -22,10 +22,9 @@ REFLECTOR|&                                                  &|PLUGBOARD| < cin
          |                                                    |         |
 ========= -------> ROTOR[0]------>ROTOR[2]----->ROTOR[2]-----> =========
                       &              &             &
+
 Note (1): In our model, the number of rotors could be scaled up depending on 
-the number of command line inputs. This could have been a useful feature for 
-the Germans back then, so let's give credit to Bjarne Stoustrup for not being 
-born 40 years earlier.  
+the number of command line inputs. 
 
 Note (2): At each '&', there is a wiring process happening (i.e. letter passed through the system
 is mapped) to the letter it is mapped to. */

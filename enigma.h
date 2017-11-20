@@ -1,10 +1,12 @@
+/*Header file of enigma program*/
+
 #ifndef ENIGMA_H
 #define ENIGMA_H
 
 #include <cstring>
 #include <string>
 #include <vector>
-#include <sstream>
+#include <sstream> 
 #include <iostream>
 
 /* Error codes  */
@@ -72,7 +74,7 @@ void check_command_line_input(int no_arguments, int noRotors, int &errorCode);
 
 
 //////////////////////////////////////////////////////////
-//                  CLASS DEFINITIONS                   //
+//            CLASS DEFINITION OF "BASEMODULE"          //
 //////////////////////////////////////////////////////////
 
 
@@ -82,33 +84,75 @@ void check_command_line_input(int no_arguments, int noRotors, int &errorCode);
 //protected.
 class BaseModule  {
  protected:
-  string settings;
-  vector<int> mapping;
-  bool empty;
+  vector<int> mapping; 
+  bool empty; 
  public:
-  void check_numeric_char (CharPtr filename, int &errorCode);
-  bool invalid_index ();
+  /*Loader function that loads character mappings*/
+  //Reads in the values of an input file stream into the "mapping" vector after checking for its validity
   void load_mappings (CharPtr filename, int &errorCode);
-  int get_mapping_size() {
-    return mapping.size(); }   
+
+  /*Function that checks whether an input file contains a non-numeric character*/
+  //Searches the text string in a given input file and searches for any non-numeric character
+  //Note that we use a string here, because the token method used to read in otherwise only
+  //reads in integer tokens. Although this may seem slightly inefficient, the validity of the file input
+  //has priority in this case. 
+  void check_numeric_char (CharPtr filename, int &errorCode);
+
+
+  /*Getter function that returns the size of the mapping vector*/
+  int get_mapping_size();
+
+  /*Function that changes the value of the current character to its mapped character*/
+  //Given the mapping of each character, this function passes the current character
+  //by reference and changes its value to the mapped value specified in the respective file
+  //of the plugboard and the reflector. Note that the wiring of the rotor works slightly different
+  //(further specified in rotor subclass)
   void swap_values (char &current_char); //represents the wiring
+
+  /*Function that checks for further validity of the input file stream*/
+  //Checks for two conditions:
+  //(1) failure to open the file
+  //(2) empty files, in which case it sets a boolean "empty" as true
+  //the "empty" attribute is useful to potentially skip later checks
   bool is_valid(CharPtr filename, int &errorCode);
+
+  /*Function that checks for an invalid index number in configuration file*/
+  //Any numeric character that is <0 and >25 is invalid, as it is not part of the 0-based index
+  //of the alphabet
+  bool invalid_index ();
+
+  /*Pure virtual function that will be redefined in subclasses*/
   virtual void check_config(CharPtr clInput, int &errorCode) = 0;
 };
 
-/*Class definition of plugboard as a child class of BaseModule*/
-//Only novel features of this class compared to the abstract class are that
-//it has different configurations to check
+
+//////////////////////////////////////////////////////////
+//            CLASS DEFINITION OF "PLUGBOARD"           //
+//////////////////////////////////////////////////////////
+
+
 class Plugboard : public BaseModule {
  public:
+  /*Constructor of the plugboard*/
+  //Loads the mappings of the plugboard
   Plugboard (CharPtr clArgument, int &errorCode);
-  void pass_through(char &message);
+
+  /*Function that checks the configurations of the plugboard*/
+  //Checks for the following conditions:
+  //(1) Non-numeric character
+  //(2) Incorrect number of plugboard parameters
+  //(3) Impossible plugboard configuration
+  //(4) Invalid index
   void check_config(CharPtr clInput, int &errorCode);
 };
 
 
 
-/*Class definition for the rotors.*/
+//////////////////////////////////////////////////////////
+//              CLASS DEFINITION OF "ROTOR"             //
+//////////////////////////////////////////////////////////
+
+
 //Note that this class deliberately has no constructor, because we create an array of rotors to give the
 //enigma setup more flexibility.
 class Rotor : public BaseModule  {
@@ -171,18 +215,20 @@ class Rotor : public BaseModule  {
 #endif
 
 
-/*Class definition of reflector as a child class of BaseModule*/
+//////////////////////////////////////////////////////////
+//            CLASS DEFINITION OF "REFLECTOR"           //
+//////////////////////////////////////////////////////////
+
 
 class Reflector: public BaseModule  {
  public:
-  /*Reflector that refers to member functions of the abstract parent class*/
+  /*Constructor that refers to member functions of the abstract parent class*/
   Reflector(CharPtr clArguments, int &errorCode);
-
-  /*Function that processes the letter for the reflector*/
-  //This function just refers to the swap_values function in the abstract base class
-  //void pass_through(char &message, int n);
-
   
+  /*Function that that checks the configurations in the .rf file*/
+  //Checks for the following conditions:
+  //(1) Non-numeric character, (2) Incorrect number of reflector parameters
+  //(3) Invalid reflector mapping, (4) Invalid index
   void check_config(CharPtr clInput, int &errorCode);    
 };
 
