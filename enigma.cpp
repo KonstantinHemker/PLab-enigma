@@ -41,12 +41,9 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
   
 
 /*Function that initialises the array of rotors*/
-
-void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_mapping, Rotor* rotor)
+void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_mapping, Rotor* rotor)
 {
-  if (noRotors == 0)
-    return;
-  else
+  if (noRotors > 0)
     {
       for (int c = 0; c <= noRotors; c++)
 	rotor[c].init_rotor(cl_argument[c+3], error_code);
