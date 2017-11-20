@@ -45,7 +45,7 @@ void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vec
 {
   if (noRotors > 0)
     {
-      for (int c = 0; c <= noRotors; c++)
+      for (int c = 0; c < noRotors; c++)
 	rotor[c].init_rotor(cl_argument[c+3], error_code);
       
       //Sets rotor starting position mappings and check their validity
