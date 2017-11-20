@@ -10,6 +10,11 @@
 #include "enigma.h"
 
 
+////////////////////////////////////////////////////////
+//                  GENERAL FUNCTIONS                 //
+////////////////////////////////////////////////////////
+
+
 /*Function that checks all enigma setup errors */
 void check_enigma_setup (int clArguments, char* argv[], int noRotors, int &errorCode, Plugboard &plugboard, Rotor* rotor, Reflector &reflector, vector<int> posMapping)  {
   check_command_line_input(clArguments, noRotors, errorCode);
@@ -103,7 +108,9 @@ void check_command_line_input (int no_arguments, int noRotors, int &errorCode)
 }
 
 
-/****Member functions of the abstract class BaseModule****/
+////////////////////////////////////////////////////////
+// MEMBER FUNCTIONS OF ABSTRACT CLASS "BASEMODULE"    //
+///////////////////////////////////////////////////////
 
 /*Function that checks whether an input file contains a non-numeric character*/
 void BaseModule::check_numeric_char(CharPtr filename, int &errorCode)  {
@@ -112,10 +119,11 @@ void BaseModule::check_numeric_char(CharPtr filename, int &errorCode)  {
   istreambuf_iterator<char> eos;
   string temp (istreambuf_iterator<char>(enigmasettings), eos );
   enigmasettings.close();
-  string settings = temp;
+  string settings = temp; 
   //Check non numeric character
   for (unsigned int c=0; c< settings.size(); c++)  {
     if (((settings[c] <= 57) && (settings[c]>=48)) || (settings[c] == 32) || (settings[c] == '\n'))
+      //48 and 57 refer to lowest an highest valid ASCII digits, 32 is the whitespace character
       {}
     else
       errorCode = NON_NUMERIC_CHARACTER;
@@ -148,12 +156,12 @@ bool BaseModule::is_valid (CharPtr filename, int &errorCode)   {
   inStream.seekg(0, inStream.end);
   int n = inStream.tellg();
   inStream.close();
-  if (n == 0)  {
-      empty = true;
+  if (n == 0)  { // checks whether the file is an empty file (avoid potential segmentation fault)
+    empty = true;  
       return false;
     }
   else
-     empty = false;
+    empty = false; 
 
   return true;
 }
@@ -164,11 +172,11 @@ void BaseModule::swap_values (char &current_char)  {
     return;
 
   for (unsigned int i=0; i <= mapping.size(); i++)   {
-    if ((mapping[i]+65 == current_char) && (i%2 == 0))   { //compares ASCII values
+    if ((mapping[i]+65 == current_char) && (i%2 == 0))   { //+65 converts to ASCII value
       current_char = mapping[i+1]+65;
       return;
 	}
-    if ((mapping[i]+65 == current_char) && (i%2 == 1))  
+    if ((mapping[i]+65 == current_char) && (i%2 == 1))  //same as above
       current_char = mapping[i-1]+65;
     }
 }
@@ -183,6 +191,25 @@ bool BaseModule::invalid_index ()  {
 }
 
 
+////////////////////////////////////////////////////////
+//        MEMBER FUNCTIONS OF CLASS "PLUGBOARD"       //
+////////////////////////////////////////////////////////
+
+/*Constructor for the plugboard*/
+Plugboard::Plugboard(CharPtr clArgument, int &errorCode) {
+
+  load_mappings (clArgument, errorCode);
+}
+
+
+/*Passes values through the plugboard
+void Plugboard::pass_through(char &message)  {
+  swap_values(message);
+}
+*/
+
+
+/*Function that checks all possible error conditions for the plugboard*/
 void Plugboard::check_config(CharPtr clInput, int &errorCode)   {
 
   if (empty == true)
@@ -215,56 +242,91 @@ void Plugboard::check_config(CharPtr clInput, int &errorCode)   {
       errorCode = INVALID_INDEX;
       cerr << "Invalid index in plugboard file " << clInput << endl;
       return;
-  }
- 
+  } 
 }
 
 
 
+////////////////////////////////////////////////////////
+//         MEMBER FUNCTIONS OF CLASS "ROTOR"          //
+////////////////////////////////////////////////////////
+
+/*Pooling function that initializes loads settings and sets notches of the rotor*/
+void Rotor:: init_rotor(CharPtr clArgument, int &errorCode) {
+  load_mappings(clArgument, errorCode);
+  if (errorCode > 0)
+    return;
+  set_notch();
+}
+
+
+/*Setter/getter functions for notches*/
+void Rotor::set_notch ()  {
+  for (unsigned int n=25; n <= mapping.size()-1; n++)
+    notch[n-25] = mapping[n+1];
+}
+
+int Rotor:: get_notch(int n)  {
+  return notch[n];
+}
+
+/*Setter/getter/add function for the "top position", i.e. offset*/
+void Rotor::set_top_position (int c, int noRotors, vector<int> posMapping, int &errorCode)  {
+  if (posMapping.size() > 0)
+    top_position = posMapping[c];
+}
+
+int Rotor::get_top_position() {
+  return top_position;
+}
+
+void Rotor::add_top_position(int n) {
+  top_position += n;
+}
+
+
+/*Functions that adjust for the current offset of the rotor*/
 void Rotor::adjust_up(char& current_char)  {
-  if (current_char + top_position > 90) 
+  if (current_char + top_position > 90) //90 is the ASCII value for 'Z'
     current_char += top_position + -26;
+  //adjusts with -26 in case the relative position of the rotor would pass Z in relative terms
   else
     current_char += top_position;
 }
 
-
 void Rotor::adjust_down(char&current_char)  {
   if (current_char - top_position < 65) 
     current_char = current_char - top_position + 26;
+  //adjusts with +26 in case the relative position would pass Z in relative terms
   else  
     current_char = current_char - top_position;
 }
 
 
-void Rotor::rotor_inwards (char& current_char, Rotor* rotor, int noRotors, int a) {
+
+void Rotor::mapping_inwards (char& current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
 
   adjust_up(current_char);
 
-  swap_values(current_char); 
-
-  adjust_down(current_char);
-  
-    a--;
-    if (a >= 0)
-      rotor[a].rotor_inwards(current_char, rotor, noRotors, a);
-}
-
- 
-
-void Rotor::swap_values(char &current_char) {
-  letter = current_char -65;
+  //Swap values according to mapping going into the reflector
   for(int i = 0; i <= 25; i++)  {
     if (i == current_char - 65)  {
       current_char = mapping[i] + 65;
       break;
     }
   } 
+
+  adjust_down(current_char);
+  
+  a--;
+  if (a >= 0)
+    rotor[a].mapping_inwards(current_char, rotor, noRotors, a);
 }
 
-void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
+
+void Rotor::mapping_outwards(char &current_char, Rotor* rotor, int noRotors, int a) {
   if (noRotors == 0)
     return;
   
@@ -281,71 +343,13 @@ void Rotor::rotor_outwards(char &current_char, Rotor* rotor, int noRotors, int a
   
   a++;
   if (a < noRotors)
-    rotor[a].rotor_outwards(current_char, rotor, noRotors, a);
-}
-  
-void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
-  
-  if (noRotors == 0)
-    return;
-  
-  bool top_position_meets_notch;
-  int a = 0;
-  do 
-    {
-      if (rotor[i].get_notch(a) == rotor[i].get_top_position()+1) //Checks for notch at the next pos 
-	top_position_meets_notch = true;
-      else
-	top_position_meets_notch = false;
-      
-      if ((top_position_meets_notch == false) && (rotor[i].get_top_position() == 25))
-	rotor[i].add_top_position(-25);
-      
-      else if ((top_position_meets_notch == false) && (rotor[i].get_top_position() != 25))
-	rotor[i].add_top_position(1);
-      else if ((top_position_meets_notch == true) && (rotor[i].get_top_position() == 25))  {
-	rotor[i].add_top_position(-25);
-	i--;
-	rotate_up(i, rotor, noRotors); }
-      else  {
-	rotor[i].add_top_position(1);
-	i--;
-	rotor[i].rotate_up(i, rotor, noRotors);
-      }
-      a++;
-    }
-  while (rotor[i].get_notch(a) != '\0');
+    rotor[a].mapping_outwards(current_char, rotor, noRotors, a);
 }
 
 
-void Rotor::check_rot_positions(int noRotors, vector<int> posMapping, int &errorCode, CharPtr clArgument) {
 
-  int vsize = posMapping.size();
 
-  //Check NON NUMERIC CHARACTER
-  check_numeric_char(clArgument, errorCode);
-  if (errorCode != 0)  {
-    cerr << "Non-numeric character in rotor positions file " << clArgument << endl;
-    return;
-  }
-  //Check for INVALID INDEX
-  for (int i=0; i<vsize; i++) {
-    if (posMapping[i] > 25 || posMapping[i] < 0)  {
-      cerr << "Invalid index in rotor position file " << clArgument << endl;
-      errorCode = INVALID_INDEX;  //INVALID INDEX code
-      return;
-    }
-  }
-  
-  //Check for NO_ROTOR_STARTING_POSITION
-  if (noRotors <= vsize)
-    return;
-  else  {
-    errorCode = NO_ROTOR_STARTING_POSITION;
-    cerr << "No starting position for rotor 0 in rotor position file: " << clArgument << endl;
-  }
-}
-
+/*Function that checks the configurations of the rotor itself*/
 void Rotor::check_config (CharPtr clInput, int &errorCode) {
   //Check NON_NUMERIC_CHARACTER
   check_numeric_char(clInput, errorCode);
@@ -380,6 +384,89 @@ void Rotor::check_config (CharPtr clInput, int &errorCode) {
     errorCode = INVALID_INDEX;
   }
 }
+
+
+
+/*Function that checks the configurations of the rotor positions*/
+void Rotor::check_rot_positions(int noRotors, vector<int> posMapping, int &errorCode, CharPtr clArgument) {
+
+  int vsize = posMapping.size();
+
+  //Check NON NUMERIC CHARACTER
+  check_numeric_char(clArgument, errorCode);
+  if (errorCode != 0)  {
+    cerr << "Non-numeric character in rotor positions file " << clArgument << endl;
+    return;
+  }
+  //Check for INVALID INDEX
+  for (int i=0; i<vsize; i++) {
+    if (posMapping[i] > 25 || posMapping[i] < 0)  {
+      cerr << "Invalid index in rotor position file " << clArgument << endl;
+      errorCode = INVALID_INDEX;  //INVALID INDEX code
+      return;
+    }
+  }
+  
+  //Check for NO_ROTOR_STARTING_POSITION
+  if (noRotors <= vsize)
+    return;
+  else  {
+    errorCode = NO_ROTOR_STARTING_POSITION;
+    cerr << "No starting position for rotor 0 in rotor position file: " << clArgument << endl;
+  }
+}
+
+
+
+/*Recursive function that rotates the rotors */
+void Rotor::rotate_up(int i, Rotor* rotor, int noRotors) {
+  
+  if (noRotors == 0) //skip these steps if there are no rotors
+    return;
+  
+  bool top_position_meets_notch;
+  int a = 0;
+  do 
+    {
+      if (rotor[i].get_notch(a) == rotor[i].get_top_position()+1) //Checks for notch at the next pos 
+	top_position_meets_notch = true;
+      else
+	top_position_meets_notch = false;
+      
+      if ((top_position_meets_notch == false) && (rotor[i].get_top_position() == 25))
+	rotor[i].add_top_position(-25);
+      
+      else if ((top_position_meets_notch == false) && (rotor[i].get_top_position() != 25))
+	rotor[i].add_top_position(1);
+      else if ((top_position_meets_notch == true) && (rotor[i].get_top_position() == 25))  {
+	rotor[i].add_top_position(-25);
+	i--;
+	rotor[i].rotate_up(i, rotor, noRotors); }
+      else  {
+	rotor[i].add_top_position(1);
+	i--;
+	rotor[i].rotate_up(i, rotor, noRotors);
+      }
+      a++;
+    }
+  while (rotor[i].get_notch(a) != '\0');
+}
+
+
+////////////////////////////////////////////////////////
+//     MEMBER FUNCTIONS OF CLASS "REFLECTOR"          //
+////////////////////////////////////////////////////////
+
+/*Constructor of the reflector*/
+Reflector::Reflector (CharPtr clArguments, int &errorCode)  {
+  load_mappings(clArguments, errorCode);
+}
+
+/*Function that processes the letter for the reflector
+void Reflector::pass_through(char &message, int n)  {
+  swap_values(message);
+}
+*/
 
 void Reflector::check_config(CharPtr clInput, int &errorCode)  {
   //Check NON NUMERIC CHARACTER
@@ -418,3 +505,5 @@ void Reflector::check_config(CharPtr clInput, int &errorCode)  {
     return;
   }
 }
+
+
