@@ -41,7 +41,7 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
 void error_description (int code, int noRotors, string class_type, CharPtr cl_argument[], int nargument, int nrotor, Reflector &reflector, char message);
 
 
-//void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> &pos_mapping, Rotor rotor[]);
+void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_mapping, Rotor* rotor);
 
 /*Function that creates all rotor position mappings */
 void load_rotor_positions(CharPtr cl_position, vector<int> &pos_mapping, int &error_code, Rotor* rotor);

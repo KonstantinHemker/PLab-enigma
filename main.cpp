@@ -27,8 +27,8 @@ int main(int argc, char** argv)
   Rotor rotor[no_rotors+1];
   if (no_rotors > 0)
     {
-      //initialize_rotors(no_rotors, argv, error_code, pos_mapping, rotor);
-      
+      initialize_rotors(no_rotors, argv, error_code, pos_mapping, rotor);
+      /*
       for (int c = 0; c < no_rotors; c++)
 	rotor[c].init_rotor(argv[c+3], error_code);
       if (error_code == 0)
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 	  load_rotor_positions(argv[no_rotors+3], pos_mapping, error_code, rotor);
 	  set_rotor_positions(0, pos_mapping, rotor, no_rotors, error_code);
 	}
-      
+      */
     }
   
     

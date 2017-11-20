@@ -41,8 +41,8 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
   
 
 /*Function that initialises the array of rotors*/
-/*
-void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_mapping, Rotor rotor[])
+
+void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vector<int> pos_mapping, Rotor* rotor)
 {
   if (noRotors == 0)
     return;
@@ -52,11 +52,11 @@ void initialize_rotors(int noRotors, CharPtr cl_argument[], int &error_code, vec
 	rotor[c].init_rotor(cl_argument[c+3], error_code);
       
       //Sets rotor starting position mappings and check their validity
-      load_rotor_positions(cl_argument[noRotors+3], pos_mapping, error_code);
-      set_rotor_positions(0, pos_mapping, rotor, noRotors);
+      load_rotor_positions(cl_argument[noRotors+3], pos_mapping, error_code, rotor);
+      set_rotor_positions(0, pos_mapping, rotor, noRotors, error_code);
     }
 }
-*/
+
 
 /*Function that creates the position mappings for all rotors in the system*/
 void load_rotor_positions(CharPtr cl_position, vector<int> &pos_mapping, int &error_code, Rotor* rotor)  {
