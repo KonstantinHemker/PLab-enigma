@@ -17,7 +17,6 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
   if (error_code > 0)
     return;
 
- 
   plugboard.check_config(argv[1], error_code);
   if (error_code > 0)
       return;
@@ -27,7 +26,7 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
       rotor[0].check_rot_positions(noRotors, pos_mapping, error_code, argv[noRotors+3]); 
       if (error_code > 0)
 	 return;
-
+      
       for (int c = 0 ;c < noRotors; c++) 
 	{
 	  rotor[c].check_config(argv[c+3], error_code);
@@ -35,7 +34,6 @@ void check_enigma_setup (int cl_arguments, char* argv[], int noRotors, int &erro
 	    return;
 	}
     }
-
   reflector.check_config(argv[2], error_code);
 }
   
@@ -74,17 +72,16 @@ void load_rotor_positions(CharPtr cl_position, vector<int> &pos_mapping, int &er
   pos_input.close();
 }
 
+
 /*Recursive function that sets the rotor positions for each rotor*/
 void set_rotor_positions(int c, vector<int> pos_mapping, Rotor* rotor, int noRotors, int &error_code)  {
   rotor[c].set_top_position(c, noRotors, pos_mapping, error_code);
   c++;
   if (c < noRotors)
     set_rotor_positions(c, pos_mapping, rotor, noRotors, error_code);
-  else
-    return;
 }
 
-
+/*Function that checks message input entered in the command line*/
 void check_message_input (char message, int &error_code)
 {
   if (isupper(message) == 0)
@@ -96,7 +93,7 @@ void check_message_input (char message, int &error_code)
     error_code = 0;
 }
   
-
+/*Functions that checks the validity of the arguments entered in the command line*/
 void check_command_line_input (int no_arguments, int noRotors, int &error_code)
 {
   if (((noRotors == 0) && (no_arguments < 3)) || ((noRotors > 0) && (no_arguments < 5)))
@@ -113,8 +110,10 @@ void check_command_line_input (int no_arguments, int noRotors, int &error_code)
     }
 }
 
-/*Member functions*/
 
+/****Member functions of the abstract class BaseModule****/
+
+/*Function that checks whether an input file contains a non-numeric character*/
 void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
   ifstream enigmasettings;
   enigmasettings.open(filename);
@@ -133,7 +132,7 @@ void BaseModule::check_numeric_char(CharPtr filename, int &error_code)  {
 }
    
 
-
+/*Function that loads the mapping*/
 void BaseModule::load_mappings (CharPtr filename, int& error_code)
 {
   ifstream enigmasettings;

@@ -66,15 +66,13 @@ class BaseModule  {
   bool empty;
  public:
   void check_numeric_char (CharPtr filename, int &error_code);
+  bool invalid_index ();
   void load_mappings (CharPtr filename, int &error_code);
-  int get_mapping (int n)  {
-    return mapping[n]; }
   int get_mapping_size() {
     return mapping.size(); }   
   void swap_values (char &current_char); //represents the wiring
-  bool invalid_index ();
   bool is_valid(CharPtr filename, int &error_code);
-  //virtual void check_config(CharPtr cl_input, int &error_code);         
+  virtual void check_config(CharPtr cl_input, int &error_code) = 0;
 };
 
 /*Class definition of plugboard as a child class of BaseModule*/
@@ -96,9 +94,6 @@ class Plugboard : public BaseModule {
      letter = l;
    }
    void check_config(CharPtr cl_input, int &error_code);
-   
-   char return_letter() {
-     return letter; }
 };
 
 
@@ -128,8 +123,8 @@ class Reflector: public BaseModule
 
 
 /*Class definition for the rotors.*/
-//Note that this class deliberately has no constructor, because we create an array of rotors, which gives the
-//enigma more flexibility.
+//Note that this class deliberately has no constructor, because we create an array of rotors to give the
+//enigma setup more flexibility.
 class Rotor : public BaseModule
 {
  private:
