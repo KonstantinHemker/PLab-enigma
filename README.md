@@ -1,2 +1,2 @@
 ## Object-oriented enigma implementation
-My solutions the enigma assignment of the C++ Programming Labs of the MSc in Computing at Imperial College London
+Object-oriented implementation of an enigma rotor-cipher machine, allowing encoding and decoding of messages given some plugboard configurations.   
